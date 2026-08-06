@@ -6,7 +6,7 @@ import type { Store } from "@/types/database";
 
 export function StoreCard({ store }: { store: Store }) {
   return (
-    <div className="flex flex-col overflow-hidden rounded-card bg-cream-soft shadow-soft">
+    <div className="flex h-full flex-col overflow-hidden rounded-card bg-cream-soft shadow-soft">
       <div className="relative aspect-[16/10] bg-blush-light">
         {store.photo_url ? (
           <Image src={store.photo_url} alt={store.name} fill sizes="400px" className="object-cover" />
