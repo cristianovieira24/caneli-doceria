@@ -94,11 +94,12 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {menuOpen && (
-        <nav
-          className="lg:hidden border-t border-ink/5 bg-cream-soft px-5 py-4 flex flex-col gap-1"
-          aria-label="Navegação mobile"
-        >
+      <div
+        className={`lg:hidden overflow-hidden border-t border-ink/5 bg-cream-soft transition-[grid-template-rows] duration-300 ease-out grid ${
+          menuOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr] border-t-0"
+        }`}
+      >
+        <nav className="min-h-0 px-5 py-4 flex flex-col gap-1" aria-label="Navegação mobile">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -117,7 +118,7 @@ export function SiteHeader() {
             Ver cardápio
           </Link>
         </nav>
-      )}
+      </div>
     </header>
   );
 }

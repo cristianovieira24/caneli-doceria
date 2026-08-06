@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { formatBRL } from "@/lib/format";
+import { QuickAddButton } from "@/components/quick-add-button";
 import type { Product } from "@/types/database";
 
 export function ProductCard({
@@ -13,9 +14,10 @@ export function ProductCard({
   const primaryImage = product.images?.find((i) => i.is_primary) ?? product.images?.[0];
   const isDraft = product.status !== "published";
   const isUnavailableHere = availability === "unavailable";
+  const needsCustomization = (product.variants?.length ?? 0) > 0 || (product.addons?.length ?? 0) > 0;
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-card bg-cream-soft shadow-soft transition-shadow hover:shadow-lift">
+    <article className="group flex flex-col overflow-hidden rounded-card bg-cream-soft shadow-soft transition-all duration-300 hover:shadow-lift hover:-translate-y-0.5">
       <Link href={`/cardapio/${product.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-blush-light">
         {primaryImage ? (
           <Image
@@ -43,24 +45,30 @@ export function ProductCard({
       </Link>
 
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="font-display text-lg leading-tight">{product.name}</h3>
+        <Link href={`/cardapio/${product.slug}`}>
+          <h3 className="font-display text-lg leading-tight hover:text-pine transition-colors">{product.name}</h3>
+        </Link>
         {product.short_description && (
           <p className="line-clamp-2 text-sm text-ink-soft">{product.short_description}</p>
         )}
         <div className="mt-auto flex items-center justify-between pt-2">
           <PriceTag product={product} />
-          <Link
-            href={`/cardapio/${product.slug}`}
-            aria-disabled={isUnavailableHere}
-            className={
-              "rounded-full border px-4 py-1.5 text-sm transition-colors " +
-              (isUnavailableHere
-                ? "border-ink/10 text-ink-soft/50 pointer-events-none"
-                : "border-pine/30 text-pine hover:bg-pine hover:text-cream-soft")
-            }
-          >
-            {isUnavailableHere ? "Indisponível" : "Adicionar"}
-          </Link>
+          {needsCustomization ? (
+            <Link
+              href={`/cardapio/${product.slug}`}
+              aria-disabled={isUnavailableHere}
+              className={
+                "rounded-full border px-4 py-1.5 text-sm transition-colors " +
+                (isUnavailableHere
+                  ? "border-ink/10 text-ink-soft/50 pointer-events-none"
+                  : "border-pine/30 text-pine hover:bg-pine hover:text-cream-soft")
+              }
+            >
+              {isUnavailableHere ? "Indisponível" : "Escolher"}
+            </Link>
+          ) : (
+            <QuickAddButton product={product} disabled={isUnavailableHere} />
+          )}
         </div>
       </div>
     </article>

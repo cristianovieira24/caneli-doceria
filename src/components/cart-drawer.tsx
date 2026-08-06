@@ -38,7 +38,18 @@ export function CartDrawer() {
     return () => document.removeEventListener("keydown", onKey);
   }, [closeDrawer]);
 
-  if (!drawerOpen) return null;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    if (drawerOpen) {
+      setMounted(true);
+    } else {
+      const t = setTimeout(() => setMounted(false), 300);
+      return () => clearTimeout(t);
+    }
+  }, [drawerOpen]);
+
+  if (!mounted) return null;
 
   const subtotal = lines.reduce((sum, l) => sum + l.unitPrice * l.quantity, 0);
   const canCheckout = store && lines.length > 0;
@@ -49,9 +60,13 @@ export function CartDrawer() {
         type="button"
         aria-label="Fechar carrinho"
         onClick={closeDrawer}
-        className="absolute inset-0 bg-ink/40"
+        className={`absolute inset-0 bg-ink/40 transition-opacity duration-300 ${drawerOpen ? "opacity-100" : "opacity-0"}`}
       />
-      <aside className="relative flex h-full w-full max-w-md flex-col bg-cream-soft shadow-lift">
+      <aside
+        className={`relative flex h-full w-full max-w-md flex-col bg-cream-soft shadow-lift transition-transform duration-300 ease-out ${
+          drawerOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
         <header className="flex items-center justify-between border-b border-ink/10 px-6 py-5">
           <h2 className="text-xl font-display">Seu pedido</h2>
           <button type="button" onClick={closeDrawer} aria-label="Fechar" className="p-1 text-ink-soft hover:text-pine">
