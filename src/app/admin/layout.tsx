@@ -3,6 +3,8 @@ import { LayoutDashboard, Package, Tags, Store as StoreIcon, Gift, Megaphone, Us
 import { getCurrentStaff } from "@/lib/auth";
 import { logout } from "./login/actions";
 
+export const dynamic = "force-dynamic";
+
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/produtos", label: "Produtos", icon: Package },
