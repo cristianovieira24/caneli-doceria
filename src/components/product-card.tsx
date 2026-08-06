@@ -17,7 +17,7 @@ export function ProductCard({
   const needsCustomization = (product.variants?.length ?? 0) > 0 || (product.addons?.length ?? 0) > 0;
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-card bg-cream-soft shadow-soft transition-all duration-300 hover:shadow-lift hover:-translate-y-0.5">
+    <article className="group flex h-full flex-col overflow-hidden rounded-card bg-cream-soft shadow-soft transition-all duration-300 hover:shadow-lift hover:-translate-y-0.5">
       <Link href={`/cardapio/${product.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-blush-light">
         {primaryImage ? (
           <Image
