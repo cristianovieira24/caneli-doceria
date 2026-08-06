@@ -1,60 +1,63 @@
 import Link from "next/link";
-import { Plus, Pencil, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { deleteCampaign } from "./actions";
-import type { Campaign } from "@/types/database";
 
-export default async function AdminCampanhasPage() {
+async function getCounts() {
   const supabase = createClient();
-  const { data } = await supabase.from("campaigns").select("*").order("priority", { ascending: false });
-  const campaigns = (data as Campaign[]) ?? [];
+  const [products, unavailable, stores, leads] = await Promise.all([
+    supabase.from("products").select("id", { count: "exact", head: true }),
+    supabase.from("products").select("id", { count: "exact", head: true }).eq("status", "draft"),
+    supabase.from("stores").select("id", { count: "exact", head: true }).eq("status", "active"),
+    supabase.from("leads").select("id", { count: "exact", head: true }).eq("status", "novo"),
+  ]);
+
+  return {
+    products: products.count ?? 0,
+    drafts: unavailable.count ?? 0,
+    stores: stores.count ?? 0,
+    newLeads: leads.count ?? 0,
+  };
+}
+
+export default async function AdminDashboard() {
+  const counts = await getCounts();
+
+  const cards = [
+    { label: "Produtos cadastrados", value: counts.products, href: "/admin/produtos" },
+    { label: "Produtos em rascunho", value: counts.drafts, href: "/admin/produtos?status=draft" },
+    { label: "Unidades ativas", value: counts.stores, href: "/admin/unidades" },
+    { label: "Encomendas novas", value: counts.newLeads, href: "/admin/encomendas" },
+  ];
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl">Campanhas</h1>
-        <Link href="/admin/campanhas/novo" className="inline-flex items-center gap-1.5 rounded-full bg-pine px-5 py-2.5 text-sm text-cream-soft">
-          <Plus size={16} /> Nova campanha
-        </Link>
+      <h1 className="text-2xl">Dashboard</h1>
+      <p className="mt-1 text-sm text-ink-soft">Visão geral do que está publicado no site agora.</p>
+
+      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {cards.map((c) => (
+          <Link
+            key={c.label}
+            href={c.href}
+            className="rounded-card bg-cream-soft p-5 shadow-soft hover:shadow-lift"
+          >
+            <p className="text-3xl font-display">{c.value}</p>
+            <p className="mt-1 text-sm text-ink-soft">{c.label}</p>
+          </Link>
+        ))}
       </div>
 
-      <div className="mt-6 overflow-x-auto rounded-card bg-cream-soft shadow-soft">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-ink/10 text-left text-ink-soft">
-              <th className="px-4 py-3 font-medium">Campanha</th>
-              <th className="px-4 py-3 font-medium">Período</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium text-right">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {campaigns.map((c) => (
-              <tr key={c.id} className="border-b border-ink/5 last:border-0">
-                <td className="px-4 py-3 font-medium text-ink">{c.title}</td>
-                <td className="px-4 py-3 text-ink-soft">
-                  {new Date(c.starts_at).toLocaleDateString("pt-BR")} – {new Date(c.ends_at).toLocaleDateString("pt-BR")}
-                </td>
-                <td className="px-4 py-3 text-ink-soft capitalize">{c.status}</td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-end gap-3">
-                    <Link href={`/admin/campanhas/${c.id}`} aria-label="Editar" className="text-ink-soft hover:text-pine">
-                      <Pencil size={16} />
-                    </Link>
-                    <form action={deleteCampaign.bind(null, c.id)}>
-                      <button type="submit" aria-label="Excluir" className="text-ink-soft hover:text-terracotta">
-                        <Trash2 size={16} />
-                      </button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {campaigns.length === 0 && (
-          <p className="px-4 py-10 text-center text-sm text-ink-soft">Nenhuma campanha cadastrada ainda.</p>
-        )}
+      <div className="mt-8 rounded-card border border-dashed border-ink/15 bg-cream-soft/60 px-6 py-6 text-sm text-ink-soft">
+        Cliques no WhatsApp, produtos mais visualizados e campanhas ativas aparecem aqui quando o
+        analytics (Fase 4) estiver conectado — nada é mostrado antes disso pra não inventar métrica.
+      </div>
+
+      <div className="mt-6 flex flex-wrap gap-3">
+        <Link href="/admin/produtos/novo" className="rounded-full bg-pine px-5 py-2.5 text-sm text-cream-soft">
+          + Novo produto
+        </Link>
+        <Link href="/admin/unidades" className="rounded-full border border-ink/15 px-5 py-2.5 text-sm">
+          Gerenciar unidades
+        </Link>
       </div>
     </div>
   );
