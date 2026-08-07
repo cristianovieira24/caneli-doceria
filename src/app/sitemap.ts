@@ -1,9 +1,17 @@
 import type { MetadataRoute } from "next";
 import { createClient } from "@/lib/supabase/server";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.canelidoceria.com.br";
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  "https://www.canelidoceria.com.br";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  if (DEMO_MODE) {
+    return [];
+  }
+
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: SITE_URL, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/cardapio`, changeFrequency: "daily", priority: 0.9 },
@@ -15,9 +23,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     const supabase = createClient();
+
     const [{ data: products }, { data: stores }] = await Promise.all([
-      supabase.from("products").select("slug, updated_at").eq("status", "published"),
-      supabase.from("stores").select("slug, updated_at").eq("status", "active"),
+      supabase
+        .from("products")
+        .select("slug, updated_at")
+        .eq("status", "published"),
+
+      supabase
+        .from("stores")
+        .select("slug, updated_at")
+        .eq("status", "active"),
     ]);
 
     const productRoutes: MetadataRoute.Sitemap = (products ?? []).map((p) => ({
