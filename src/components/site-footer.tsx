@@ -3,6 +3,8 @@ import { Instagram, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import type { Store } from "@/types/database";
 
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
+
 const SOCIAL_LINKS = {
   instagram: "https://www.instagram.com/canelidoceria/",
 };
@@ -15,10 +17,9 @@ async function getActiveStores(): Promise<Store[]> {
       .select("*")
       .eq("status", "active")
       .order("display_order");
+
     return (data as Store[]) ?? [];
   } catch {
-    // Supabase not configured yet (local preview) — footer still renders
-    // navigation and social links without the store list.
     return [];
   }
 }
@@ -31,9 +32,11 @@ export async function SiteFooter() {
       <div className="section grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <p className="font-script text-3xl text-pine">caneli</p>
+
           <p className="mt-3 max-w-[26ch] text-sm text-ink-soft">
             Doces, cafés e dias felizes.
           </p>
+
           <a
             href={SOCIAL_LINKS.instagram}
             target="_blank"
@@ -45,25 +48,59 @@ export async function SiteFooter() {
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-ink-soft">Navegação</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-ink-soft">
+            Navegação
+          </h3>
+
           <ul className="mt-4 space-y-2 text-sm">
-            <li><Link href="/cardapio" className="hover:text-pine">Cardápio</Link></li>
-            <li><Link href="/unidades" className="hover:text-pine">Unidades</Link></li>
-            <li><Link href="/encomendas" className="hover:text-pine">Encomendas</Link></li>
-            <li><Link href="/sobre" className="hover:text-pine">Sobre</Link></li>
-            <li><Link href="/contato" className="hover:text-pine">Contato</Link></li>
+            <li>
+              <Link href="/cardapio" className="hover:text-pine">
+                Cardápio
+              </Link>
+            </li>
+
+            <li>
+              <Link href="/unidades" className="hover:text-pine">
+                Unidades
+              </Link>
+            </li>
+
+            <li>
+              <Link href="/encomendas" className="hover:text-pine">
+                Encomendas
+              </Link>
+            </li>
+
+            <li>
+              <Link href="/sobre" className="hover:text-pine">
+                Sobre
+              </Link>
+            </li>
+
+            <li>
+              <Link href="/contato" className="hover:text-pine">
+                Contato
+              </Link>
+            </li>
           </ul>
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-ink-soft">Unidades</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-ink-soft">
+            Unidades
+          </h3>
+
           <ul className="mt-4 space-y-3 text-sm">
             {stores.length === 0 && (
               <li className="text-ink-soft/70">Em breve por aqui.</li>
             )}
+
             {stores.map((store) => (
               <li key={store.id}>
-                <Link href={`/unidades/${store.slug}`} className="hover:text-pine">
+                <Link
+                  href={`/unidades/${store.slug}`}
+                  className="hover:text-pine"
+                >
                   {store.name} — {store.neighborhood}
                 </Link>
               </li>
@@ -72,7 +109,10 @@ export async function SiteFooter() {
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-ink-soft">Fale com a gente</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-ink-soft">
+            Fale com a gente
+          </h3>
+
           <ul className="mt-4 space-y-3 text-sm">
             {stores.slice(0, 1).map((store) => (
               <li key={store.id}>
@@ -86,18 +126,42 @@ export async function SiteFooter() {
                 </a>
               </li>
             ))}
-            <li><Link href="/contato" className="hover:text-pine">Ver todos os contatos</Link></li>
+
+            <li>
+              <Link href="/contato" className="hover:text-pine">
+                Ver todos os contatos
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
 
       <div className="border-t border-ink/10">
         <div className="section flex flex-col gap-2 py-6 text-xs text-ink-soft sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Caneli Doceria. Todos os direitos reservados.</p>
+          {DEMO_MODE ? (
+            <p>
+              Demonstração independente de projeto — não é o site oficial da
+              Caneli.
+            </p>
+          ) : (
+            <p>
+              © {new Date().getFullYear()} Caneli Doceria. Todos os direitos
+              reservados.
+            </p>
+          )}
+
           <div className="flex gap-4">
-            <Link href="/privacidade" className="hover:text-pine">Política de privacidade</Link>
-            <Link href="/termos" className="hover:text-pine">Termos de uso</Link>
-            <Link href="/admin" className="hover:text-pine">Acesso administrativo</Link>
+            <Link href="/privacidade" className="hover:text-pine">
+              Política de privacidade
+            </Link>
+
+            <Link href="/termos" className="hover:text-pine">
+              Termos de uso
+            </Link>
+
+            <Link href="/admin" className="hover:text-pine">
+              Acesso administrativo
+            </Link>
           </div>
         </div>
       </div>
