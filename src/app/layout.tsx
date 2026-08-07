@@ -4,43 +4,59 @@ import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CartDrawer } from "@/components/cart-drawer";
-import { ConsentBanner } from "@/components/consent-banner";
-import { AnalyticsScripts } from "@/components/analytics-scripts";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-fraunces",
   weight: ["400", "500", "600"],
 });
+
 const caveat = Caveat({
   subsets: ["latin"],
   variable: "--font-caveat",
   weight: ["500", "600", "700"],
 });
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.canelidoceria.com.br"),
+  metadataBase: new URL("https://caneli-doceria.vercel.app"),
   title: {
     default: "Caneli Doceria — Doces, cafés e dias felizes | Goiânia",
     template: "%s | Caneli Doceria",
   },
   description:
-    "Doceria e cafeteria artesanal em Goiânia. Croissants, bolos, tortas, cafés e encomendas para presentear e comemorar. Confira o cardápio e peça pelo WhatsApp.",
+    "Demonstração independente de projeto digital para a Caneli Doceria.",
   openGraph: {
     type: "website",
     locale: "pt_BR",
     siteName: "Caneli Doceria",
   },
-  robots: { index: true, follow: true },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+    },
+  },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="pt-BR" className={`${fraunces.variable} ${caveat.variable} ${inter.variable}`}>
+    <html
+      lang="pt-BR"
+      className={`${fraunces.variable} ${caveat.variable} ${inter.variable}`}
+    >
       <body>
         <a
           href="#conteudo-principal"
@@ -48,12 +64,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Pular para o conteúdo
         </a>
+
         <SiteHeader />
+
         <main id="conteudo-principal">{children}</main>
+
         <SiteFooter />
         <CartDrawer />
-        <ConsentBanner />
-        <AnalyticsScripts />
       </body>
     </html>
   );
