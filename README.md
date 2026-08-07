@@ -86,24 +86,6 @@ depois, isto ainda não foi feito (nenhum é bloqueante para publicar):
 - Testes automatizados (o projeto foi validado com `typecheck` e `lint`,
   não há testes end-to-end)
 
-## Atualizações recentes
-
-- **Corrigido**: o banner da home apontava para uma imagem que nunca existia
-  no projeto — agora a foto principal é 100% gerenciável pelo painel
-  (`/admin/conteudo`), com estado "Foto em breve" enquanto não for enviada.
-- **Corrigido**: o botão "Adicionar" nos cards de produto só levava para a
-  página do produto, sem realmente adicionar nada ao pedido — agora adiciona
-  de verdade (produtos com variação/adicional continuam abrindo a página do
-  produto, já que precisam de uma escolha antes).
-- **Novo**: `/admin/conteudo` — editar o banner da home e o texto da página
-  "Sobre" sem mexer no banco direto. Removida a data "desde 2020" que tinha
-  sido colocada por engano na Fase 1 (nenhuma data da empresa é inventada).
-- **Novo**: animações de entrada suaves ao rolar a página, carrinho lateral
-  deslizando (em vez de aparecer seco), menu mobile com transição — tudo
-  respeitando "reduzir movimento" do sistema operacional.
-- Mantidas as correções de login feitas depois da Fase 3 (cookies de sessão
-  usando a API mais nova do Supabase).
-
 ## O que já funciona
 
 - Next.js 14 (App Router) + TypeScript + Tailwind, com um design system
