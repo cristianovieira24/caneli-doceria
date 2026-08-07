@@ -1,20 +1,176 @@
-import type { Metadata } from "next";
-import { LeadForm } from "./lead-form";
+import Link from "next/link";
+import { Hero, type HeroContent } from "@/components/hero";
+import { CampaignBanner } from "@/components/campaign-banner";
+import { ProductCard } from "@/components/product-card";
+import { CategoryCard } from "@/components/category-card";
+import { StoreCard } from "@/components/store-card";
+import { JsonLd } from "@/components/json-ld";
+import { Reveal } from "@/components/reveal";
+import { createClient } from "@/lib/supabase/server";
+import type { Campaign, Category, Product, Store } from "@/types/database";
 
-export const metadata: Metadata = {
-  title: "Encomendas",
-  description: "Bolos, tortas, cestas e kits para presentear. Faça seu pedido de encomenda na Caneli Doceria.",
-};
+async function getHomeData() {
+  const supabase = createClient();
 
-export default function EncomendasPage() {
+  const [{ data: featured }, { data: categories }, { data: stores }, { data: campaigns }, { data: heroRow }] =
+    await Promise.all([
+      supabase
+        .from("products")
+        .select("*, images:product_images(*)")
+        .eq("status", "published")
+        .eq("featured", true)
+        .order("display_order")
+        .limit(8),
+      supabase.from("categories").select("*").eq("visible", true).order("display_order"),
+      supabase.from("stores").select("*").eq("status", "active").order("display_order"),
+      supabase.from("campaigns").select("*").order("priority", { ascending: false }).limit(1),
+      supabase.from("content_sections").select("data").eq("key", "home_hero").maybeSingle(),
+    ]);
+
+  return {
+    featured: (featured as Product[]) ?? [],
+    categories: (categories as Category[]) ?? [],
+    stores: (stores as Store[]) ?? [],
+    campaign: ((campaigns as Campaign[]) ?? [])[0] ?? null,
+    hero: (heroRow?.data as HeroContent | undefined) ?? undefined,
+  };
+}
+
+export default async function HomePage() {
+  let featured: Product[] = [];
+  let categories: Category[] = [];
+  let stores: Store[] = [];
+  let campaign: Campaign | null = null;
+  let hero: HeroContent | undefined;
+
+  try {
+    const data = await getHomeData();
+    featured = data.featured;
+    categories = data.categories;
+    stores = data.stores;
+    campaign = data.campaign;
+    hero = data.hero;
+  } catch {
+    // Supabase ainda não configurado neste ambiente — a página renderiza
+    // com estados vazios em vez de quebrar. Ver README para configurar
+    // NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY.
+  }
+
   return (
-    <div className="section py-12">
-      <p className="eyebrow">para ocasiões especiais</p>
-      <h1 className="mt-1 max-w-[24ch] text-4xl">Bolos, tortas e cestas para presentear</h1>
-      <p className="mt-3 max-w-[60ch] text-ink-soft">
-        Preencha os detalhes abaixo e a equipe entra em contato para confirmar disponibilidade e valor.
-      </p>
-      <LeadForm />
+    <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Bakery",
+          name: "Caneli Doceria",
+          url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.canelidoceria.com.br",
+          sameAs: ["https://www.instagram.com/canelidoceria/"],
+          location: stores.map((s) => ({
+            "@type": "Place",
+            name: s.name,
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: s.address,
+              addressLocality: s.city,
+              addressRegion: s.state,
+              addressCountry: "BR",
+            },
+          })),
+        }}
+      />
+      <Hero content={hero} />
+      {campaign && <CampaignBanner campaign={campaign} />}
+
+      <section className="section py-16">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="eyebrow">em destaque</p>
+            <h2 className="mt-1 text-3xl sm:text-4xl">Feitos para o seu dia</h2>
+          </div>
+          <Link href="/cardapio" className="hidden text-sm text-pine hover:underline sm:block">
+            Ver cardápio completo
+          </Link>
+        </div>
+
+        {featured.length > 0 ? (
+          <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {featured.map((product, i) => (
+              <Reveal key={product.id} delay={i * 60}>
+                <ProductCard product={product} />
+              </Reveal>
+            ))}
+          </div>
+        ) : (
+          <EmptyState message="Os destaques do cardápio aparecem aqui assim que forem cadastrados no painel." />
+        )}
+      </section>
+
+      <section className="bg-blush-light/60 py-16">
+        <div className="section">
+          <p className="eyebrow">o cardápio</p>
+          <h2 className="mt-1 text-3xl sm:text-4xl">Explore por categoria</h2>
+
+          {categories.length > 0 ? (
+            <div className="mt-8 flex gap-4 overflow-x-auto pb-2">
+              {categories.map((category, i) => (
+                <Reveal key={category.id} delay={i * 50} className="flex-shrink-0">
+                  <CategoryCard category={category} />
+                </Reveal>
+              ))}
+            </div>
+          ) : (
+            <EmptyState message="As categorias do cardápio aparecem aqui assim que forem cadastradas no painel." />
+          )}
+        </div>
+      </section>
+
+      <section className="section py-16">
+        <p className="eyebrow">nossas lojas</p>
+        <h2 className="mt-1 text-3xl sm:text-4xl">Encontre a Caneli mais perto de você</h2>
+
+        {stores.length > 0 ? (
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {stores.map((store, i) => (
+              <Reveal key={store.id} delay={i * 70}>
+                <StoreCard store={store} />
+              </Reveal>
+            ))}
+          </div>
+        ) : (
+          <EmptyState message="As unidades aparecem aqui assim que forem cadastradas no painel." />
+        )}
+      </section>
+
+      <section className="section pb-16 sm:pb-20">
+        <div className="arch-frame flex flex-col items-center gap-4 bg-pine px-8 py-14 text-center text-cream-soft sm:px-16">
+          <p className="eyebrow text-blush">vamos combinar?</p>
+          <h2 className="max-w-[20ch] text-3xl text-cream-soft sm:text-4xl">
+            Encomende seu bolo, cesta ou kit para presentear
+          </h2>
+          <div className="mt-2 flex flex-wrap justify-center gap-3">
+            <Link
+              href="/encomendas"
+              className="rounded-full bg-cream-soft px-7 py-3.5 text-sm font-medium text-pine hover:bg-blush-light"
+            >
+              Fazer encomenda
+            </Link>
+            <Link
+              href="/unidades"
+              className="rounded-full border border-cream-soft/40 px-7 py-3.5 text-sm font-medium text-cream-soft hover:bg-pine-dark"
+            >
+              Falar no WhatsApp
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function EmptyState({ message }: { message: string }) {
+  return (
+    <div className="mt-8 rounded-card border border-dashed border-ink/15 bg-cream-soft/60 px-6 py-10 text-center text-sm text-ink-soft">
+      {message}
     </div>
   );
 }
