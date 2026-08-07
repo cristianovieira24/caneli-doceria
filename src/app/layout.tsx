@@ -27,12 +27,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ||
-      (DEMO_MODE
-        ? "https://caneli-doceria.vercel.app"
-        : "https://www.canelidoceria.com.br")
-  ),
+metadataBase: new URL(
+  DEMO_MODE
+    ? "https://caneli-doceria.vercel.app"
+    : process.env.NEXT_PUBLIC_SITE_URL ||
+        "https://www.canelidoceria.com.br"
+),
   title: {
     default: "Caneli Doceria — Doces, cafés e dias felizes | Goiânia",
     template: "%s | Caneli Doceria",
