@@ -4,6 +4,10 @@ import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CartDrawer } from "@/components/cart-drawer";
+import { ConsentBanner } from "@/components/consent-banner";
+import { AnalyticsScripts } from "@/components/analytics-scripts";
+
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -23,28 +27,39 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://caneli-doceria.vercel.app"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ||
+      (DEMO_MODE
+        ? "https://caneli-doceria.vercel.app"
+        : "https://www.canelidoceria.com.br")
+  ),
   title: {
     default: "Caneli Doceria — Doces, cafés e dias felizes | Goiânia",
     template: "%s | Caneli Doceria",
   },
-  description:
-    "Demonstração independente de projeto digital para a Caneli Doceria.",
+  description: DEMO_MODE
+    ? "Demonstração independente de projeto digital para a Caneli Doceria."
+    : "Doceria e cafeteria artesanal em Goiânia. Croissants, bolos, tortas, cafés e encomendas para presentear e comemorar.",
   openGraph: {
     type: "website",
     locale: "pt_BR",
     siteName: "Caneli Doceria",
   },
-  robots: {
-    index: false,
-    follow: false,
-    nocache: true,
-    googleBot: {
-      index: false,
-      follow: false,
-      noimageindex: true,
-    },
-  },
+  robots: DEMO_MODE
+    ? {
+        index: false,
+        follow: false,
+        nocache: true,
+        googleBot: {
+          index: false,
+          follow: false,
+          noimageindex: true,
+        },
+      }
+    : {
+        index: true,
+        follow: true,
+      },
 };
 
 export default function RootLayout({
@@ -71,6 +86,9 @@ export default function RootLayout({
 
         <SiteFooter />
         <CartDrawer />
+
+        {!DEMO_MODE && <ConsentBanner />}
+        {!DEMO_MODE && <AnalyticsScripts />}
       </body>
     </html>
   );
