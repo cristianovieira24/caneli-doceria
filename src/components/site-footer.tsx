@@ -27,7 +27,7 @@ export async function SiteFooter() {
   const stores = await getActiveStores();
 
   return (
-    <footer className="mt-24 border-t border-ink/10 bg-cream-deep">
+    <footer className="border-t border-ink/10 bg-cream-deep">
       <div className="section grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <p className="font-script text-3xl text-pine">caneli</p>

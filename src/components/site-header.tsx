@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X, ShoppingBag } from "lucide-react";
 import clsx from "clsx";
@@ -16,6 +17,7 @@ const NAV_LINKS = [
 ];
 
 export function SiteHeader() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const cartCount = useCartCount();
@@ -41,15 +43,24 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden lg:flex items-center gap-8" aria-label="Navegação principal">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-[15px] text-ink-soft hover:text-pine transition-colors"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const isActive = link.href === "/" ? pathname === "/" : pathname?.startsWith(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={isActive ? "page" : undefined}
+                className={clsx(
+                  "relative text-[15px] transition-colors after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:bg-pine after:transition-all",
+                  isActive
+                    ? "text-pine after:w-full"
+                    : "text-ink-soft after:w-0 hover:text-pine hover:after:w-full"
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="hidden lg:flex items-center gap-3">
