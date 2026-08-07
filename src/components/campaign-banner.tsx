@@ -1,9 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ViewTracker } from "@/components/view-tracker";
+import { DemoExternalLink } from "@/components/demo-external-link";
 import type { Campaign } from "@/types/database";
 
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
+
 export function CampaignBanner({ campaign }: { campaign: Campaign }) {
+  const isExternalLink = campaign.button_link?.startsWith("http");
+
   return (
     <section className="section pb-4">
       <ViewTracker event="campaign_viewed" params={{ campaign: campaign.title }} />
@@ -22,12 +27,25 @@ export function CampaignBanner({ campaign }: { campaign: Campaign }) {
           {campaign.subtitle && <p className="eyebrow text-blush">{campaign.subtitle}</p>}
           <h2 className="mt-1 max-w-[24ch] text-2xl sm:text-3xl text-cream-soft">{campaign.title}</h2>
           {campaign.button_label && campaign.button_link && (
-            <Link
-              href={campaign.button_link}
-              className="mt-4 inline-block rounded-full bg-cream-soft px-6 py-2.5 text-sm font-medium text-pine hover:bg-blush-light"
-            >
-              {campaign.button_label}
-            </Link>
+            // Internal routes (e.g. "/encomendas") stay a normal Link even
+            // in demo — those pages already guard their own real actions.
+            // Only an external link (e.g. a WhatsApp or delivery URL an
+            // admin could paste here) gets the demo guard.
+            DEMO_MODE && isExternalLink ? (
+              <DemoExternalLink
+                href={campaign.button_link}
+                className="mt-4 inline-block rounded-full bg-cream-soft px-6 py-2.5 text-sm font-medium text-pine hover:bg-blush-light"
+              >
+                {campaign.button_label}
+              </DemoExternalLink>
+            ) : (
+              <Link
+                href={campaign.button_link}
+                className="mt-4 inline-block rounded-full bg-cream-soft px-6 py-2.5 text-sm font-medium text-pine hover:bg-blush-light"
+              >
+                {campaign.button_label}
+              </Link>
+            )
           )}
         </div>
       </div>

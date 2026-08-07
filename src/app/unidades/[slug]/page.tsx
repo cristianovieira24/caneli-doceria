@@ -7,6 +7,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { JsonLd } from "@/components/json-ld";
 import { TrackedLink } from "@/components/tracked-link";
 import { DemoWhatsAppLink } from "@/components/demo-whatsapp-link";
+import { DemoExternalLink } from "@/components/demo-external-link";
 import type { Store, StoreHours, ExternalLink } from "@/types/database";
 
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
@@ -108,41 +109,42 @@ export default async function UnidadeDetalhePage({
 
   return (
     <div className="section py-12">
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Bakery",
-          name: store.name,
-          image: store.photo_url || undefined,
-          telephone: store.phone || undefined,
-          url: `${SITE_URL}/unidades/${store.slug}`,
-          address: {
-            "@type": "PostalAddress",
-            streetAddress: store.address,
-            addressLocality: store.city,
-            addressRegion: store.state,
-            postalCode: store.zip_code || undefined,
-            addressCountry: "BR",
-          },
-          openingHoursSpecification: hours
-            .filter((h) => !h.closed && h.opens_at && h.closes_at)
-            .map((h) => ({
-              "@type": "OpeningHoursSpecification",
-              dayOfWeek: [
-                "Sunday",
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-              ][h.weekday],
-              opens: h.opens_at,
-              closes: h.closes_at,
-            })),
-        }}
-      />
-
+      {!DEMO_MODE && (
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "Bakery",
+            name: store.name,
+            image: store.photo_url || undefined,
+            telephone: store.phone || undefined,
+            url: `${SITE_URL}/unidades/${store.slug}`,
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: store.address,
+              addressLocality: store.city,
+              addressRegion: store.state,
+              postalCode: store.zip_code || undefined,
+              addressCountry: "BR",
+            },
+            openingHoursSpecification: hours
+              .filter((h) => !h.closed && h.opens_at && h.closes_at)
+              .map((h) => ({
+                "@type": "OpeningHoursSpecification",
+                dayOfWeek: [
+                  "Sunday",
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                  "Saturday",
+                ][h.weekday],
+                opens: h.opens_at,
+                closes: h.closes_at,
+              })),
+          }}
+        />
+      )}
       <Breadcrumbs
         items={[
           { label: "Início", href: "/" },
@@ -253,22 +255,33 @@ export default async function UnidadeDetalhePage({
               </TrackedLink>
             )}
 
-            {links.map((link) => (
-              <TrackedLink
-                key={link.id}
-                href={link.url}
-                target="_blank"
-                rel="noreferrer"
-                event="external_delivery_click"
-                params={{
-                  store: store.slug,
-                  provider: link.label,
-                }}
-                className="inline-flex items-center gap-1.5 rounded-full border border-ink/15 px-5 py-2.5 text-sm hover:border-pine hover:text-pine"
-              >
-                {link.label}
-              </TrackedLink>
-            ))}
+            {links.map((link) =>
+              DEMO_MODE ? (
+                <DemoExternalLink
+                  key={link.id}
+                  href={link.url}
+                  message="Função desativada nesta demonstração. Nenhum site externo foi aberto."
+                  className="inline-flex items-center gap-1.5 rounded-full border border-ink/15 px-5 py-2.5 text-sm hover:border-pine hover:text-pine"
+                >
+                  {link.label}
+                </DemoExternalLink>
+              ) : (
+                <TrackedLink
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  event="external_delivery_click"
+                  params={{
+                    store: store.slug,
+                    provider: link.label,
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-ink/15 px-5 py-2.5 text-sm hover:border-pine hover:text-pine"
+                >
+                  {link.label}
+                </TrackedLink>
+              )
+            )}
           </div>
         </div>
       </div>

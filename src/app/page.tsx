@@ -9,6 +9,8 @@ import { Reveal } from "@/components/reveal";
 import { createClient } from "@/lib/supabase/server";
 import type { Campaign, Category, Product, Store } from "@/types/database";
 
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
+
 async function getHomeData() {
   const supabase = createClient();
 
@@ -58,27 +60,28 @@ export default async function HomePage() {
 
   return (
     <>
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Bakery",
-          name: "Caneli Doceria",
-          url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.canelidoceria.com.br",
-          sameAs: ["https://www.instagram.com/canelidoceria/"],
-          location: stores.map((s) => ({
-            "@type": "Place",
-            name: s.name,
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: s.address,
-              addressLocality: s.city,
-              addressRegion: s.state,
-              addressCountry: "BR",
-            },
-          })),
-        }}
-      />
-      <Hero content={hero} />
+      {!DEMO_MODE && (
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "Bakery",
+            name: "Caneli Doceria",
+            url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.canelidoceria.com.br",
+            sameAs: ["https://www.instagram.com/canelidoceria/"],
+            location: stores.map((s) => ({
+              "@type": "Place",
+              name: s.name,
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: s.address,
+                addressLocality: s.city,
+                addressRegion: s.state,
+                addressCountry: "BR",
+              },
+            })),
+          }}
+        />
+      )}      <Hero content={hero} />
       {campaign && <CampaignBanner campaign={campaign} />}
 
       <section className="section py-16">

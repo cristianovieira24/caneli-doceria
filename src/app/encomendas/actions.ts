@@ -3,6 +3,8 @@
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
+
 const leadSchema = z.object({
   name: z.string().min(2, "Informe seu nome"),
   whatsapp: z.string().min(10, "Informe um WhatsApp válido"),
@@ -31,6 +33,17 @@ export async function submitLead(_prev: LeadFormState, formData: FormData): Prom
       fieldErrors[String(issue.path[0])] = issue.message;
     }
     return { status: "error", fieldErrors, message: "Confira os campos destacados." };
+  }
+
+  // Server-side guard — the front-end already avoids implying this is a
+  // real submission in demo mode, but we never rely on that alone: even
+  // if this action is called directly, nothing gets written while
+  // DEMO_MODE is active.
+  if (DEMO_MODE) {
+    return {
+      status: "success",
+      message: "Demonstração: solicitação simulada. Nenhuma informação foi enviada ou salva.",
+    };
   }
 
   const supabase = createClient();
