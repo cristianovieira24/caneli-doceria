@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Instagram, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { DemoWhatsAppLink } from "@/components/demo-whatsapp-link";
 import type { Store } from "@/types/database";
 
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
@@ -12,6 +13,7 @@ const SOCIAL_LINKS = {
 async function getActiveStores(): Promise<Store[]> {
   try {
     const supabase = createClient();
+
     const { data } = await supabase
       .from("stores")
       .select("*")
@@ -116,14 +118,12 @@ export async function SiteFooter() {
           <ul className="mt-4 space-y-3 text-sm">
             {stores.slice(0, 1).map((store) => (
               <li key={store.id}>
-                <a
+                <DemoWhatsAppLink
                   href={`https://wa.me/${store.whatsapp}`}
-                  target="_blank"
-                  rel="noreferrer"
                   className="inline-flex items-center gap-2 hover:text-pine"
                 >
                   <MessageCircle size={16} /> WhatsApp — {store.name}
-                </a>
+                </DemoWhatsAppLink>
               </li>
             ))}
 
