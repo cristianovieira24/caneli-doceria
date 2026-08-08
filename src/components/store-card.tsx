@@ -4,11 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin, MessageCircle } from "lucide-react";
 import { TrackedLink } from "@/components/tracked-link";
+import { useSiteMode } from "@/components/site-mode-provider";
 import type { Store } from "@/types/database";
 
-const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
-
 export function StoreCard({ store }: { store: Store }) {
+  const { demoMode } = useSiteMode();
+
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-card bg-cream-soft shadow-soft">
       <div className="relative aspect-[16/10] bg-blush-light">
@@ -48,7 +49,7 @@ export function StoreCard({ store }: { store: Store }) {
             <MapPin size={15} /> Ver no mapa
           </TrackedLink>
 
-          {DEMO_MODE ? (
+          {demoMode ? (
             <button
               type="button"
               onClick={() =>

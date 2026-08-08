@@ -7,11 +7,12 @@ import { createClient } from "@/lib/supabase/client";
 import { buildWhatsAppOrderUrl } from "@/lib/whatsapp";
 import { formatBRL } from "@/lib/format";
 import { track } from "@/lib/analytics";
+import { useSiteMode } from "@/components/site-mode-provider";
 import type { Store } from "@/types/database";
 
-const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
-
 export function CartDrawer() {
+  const { demoMode } = useSiteMode();
+
   const {
     storeId,
     lines,
@@ -221,7 +222,7 @@ export function CartDrawer() {
 
             <a
               href={
-                canCheckout && !DEMO_MODE
+                canCheckout && !demoMode
                   ? buildWhatsAppOrderUrl({
                       store: store!,
                       lines,
@@ -231,8 +232,8 @@ export function CartDrawer() {
                     })
                   : undefined
               }
-              target={DEMO_MODE ? undefined : "_blank"}
-              rel={DEMO_MODE ? undefined : "noreferrer"}
+              target={demoMode ? undefined : "_blank"}
+              rel={demoMode ? undefined : "noreferrer"}
               aria-disabled={!canCheckout}
               onClick={(e) => {
                 if (!canCheckout) {
@@ -240,7 +241,7 @@ export function CartDrawer() {
                   return;
                 }
 
-                if (DEMO_MODE) {
+                if (demoMode) {
                   e.preventDefault();
 
                   window.alert(
@@ -267,7 +268,7 @@ export function CartDrawer() {
             </a>
 
             <p className="text-xs text-ink-soft/70">
-              {DEMO_MODE
+              {demoMode
                 ? "Demonstração: nenhum pedido será enviado."
                 : "Valores e disponibilidade são confirmados pela loja no WhatsApp."}
             </p>

@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { Instagram, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getFunctionalDemoMode } from "@/lib/site-mode";
 import { DemoWhatsAppLink } from "@/components/demo-whatsapp-link";
 import type { Store } from "@/types/database";
-
-const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
 
 const SOCIAL_LINKS = {
   instagram: "https://www.instagram.com/canelidoceria/",
@@ -27,7 +26,10 @@ async function getActiveStores(): Promise<Store[]> {
 }
 
 export async function SiteFooter() {
-  const stores = await getActiveStores();
+  const [stores, demoMode] = await Promise.all([
+    getActiveStores(),
+    getFunctionalDemoMode(),
+  ]);
 
   return (
     <footer className="border-t border-ink/10 bg-cream-deep">
@@ -138,7 +140,7 @@ export async function SiteFooter() {
 
       <div className="border-t border-ink/10">
         <div className="section flex flex-col gap-2 py-6 text-xs text-ink-soft sm:flex-row sm:items-center sm:justify-between">
-          {DEMO_MODE ? (
+          {demoMode ? (
             <p>
               Demonstração independente de projeto — não é o site oficial da
               Caneli.
