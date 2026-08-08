@@ -6,8 +6,16 @@ import { SiteFooter } from "@/components/site-footer";
 import { CartDrawer } from "@/components/cart-drawer";
 import { ConsentBanner } from "@/components/consent-banner";
 import { AnalyticsScripts } from "@/components/analytics-scripts";
+import { SiteModeProvider } from "@/components/site-mode-provider";
+import { getFunctionalDemoMode } from "@/lib/site-mode";
 
-const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
+/**
+ * Trava fixa da instalação.
+ * Controla SEO, indexação, schemas e analytics.
+ * NÃO é alterada pelo botão do admin.
+ */
+const DEMO_INSTALLATION =
+  process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -27,17 +35,17 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-metadataBase: new URL(
-  DEMO_MODE
-    ? "https://caneli-doceria.vercel.app"
-    : process.env.NEXT_PUBLIC_SITE_URL ||
-        "https://www.canelidoceria.com.br"
-),
+  metadataBase: new URL(
+    DEMO_INSTALLATION
+      ? "https://caneli-doceria.vercel.app"
+      : process.env.NEXT_PUBLIC_SITE_URL ||
+          "https://www.canelidoceria.com.br"
+  ),
   title: {
     default: "Caneli Doceria — Doces, cafés e dias felizes | Goiânia",
     template: "%s | Caneli Doceria",
   },
-  description: DEMO_MODE
+  description: DEMO_INSTALLATION
     ? "Demonstração independente de projeto digital para a Caneli Doceria."
     : "Doceria e cafeteria artesanal em Goiânia. Croissants, bolos, tortas, cafés e encomendas para presentear e comemorar.",
   openGraph: {
@@ -45,7 +53,7 @@ metadataBase: new URL(
     locale: "pt_BR",
     siteName: "Caneli Doceria",
   },
-  robots: DEMO_MODE
+  robots: DEMO_INSTALLATION
     ? {
         index: false,
         follow: false,
@@ -62,33 +70,42 @@ metadataBase: new URL(
       },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  /**
+   * Esse é o modo funcional dinâmico.
+   * Ele vem de site_settings.demo_mode.
+   */
+  const demoMode = await getFunctionalDemoMode();
+
   return (
     <html
       lang="pt-BR"
       className={`${fraunces.variable} ${caveat.variable} ${inter.variable}`}
     >
       <body>
-        <a
-          href="#conteudo-principal"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-pine focus:px-5 focus:py-2.5 focus:text-sm focus:text-cream-soft"
-        >
-          Pular para o conteúdo
-        </a>
+        <SiteModeProvider demoMode={demoMode}>
+          <a
+            href="#conteudo-principal"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-pine focus:px-5 focus:py-2.5 focus:text-sm focus:text-cream-soft"
+          >
+            Pular para o conteúdo
+          </a>
 
-        <SiteHeader />
+          <SiteHeader />
 
-        <main id="conteudo-principal">{children}</main>
+          <main id="conteudo-principal">{children}</main>
 
-        <SiteFooter />
-        <CartDrawer />
+          <SiteFooter />
+          <CartDrawer />
+        </SiteModeProvider>
 
-        {!DEMO_MODE && <ConsentBanner />}
-        {!DEMO_MODE && <AnalyticsScripts />}
+        {/* Analytics continua preso à trava fixa da instalação. */}
+        {!DEMO_INSTALLATION && <ConsentBanner />}
+        {!DEMO_INSTALLATION && <AnalyticsScripts />}
       </body>
     </html>
   );
