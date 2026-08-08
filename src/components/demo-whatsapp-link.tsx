@@ -1,8 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-
-const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
+import { useSiteMode } from "@/components/site-mode-provider";
 
 type DemoWhatsAppLinkProps = {
   href: string;
@@ -15,14 +14,16 @@ export function DemoWhatsAppLink({
   children,
   className,
 }: DemoWhatsAppLinkProps) {
+  const { demoMode } = useSiteMode();
+
   return (
     <a
-      href={DEMO_MODE ? "#" : href}
-      target={DEMO_MODE ? undefined : "_blank"}
-      rel={DEMO_MODE ? undefined : "noreferrer"}
+      href={demoMode ? "#" : href}
+      target={demoMode ? undefined : "_blank"}
+      rel={demoMode ? undefined : "noreferrer"}
       className={className}
       onClick={(event) => {
-        if (!DEMO_MODE) return;
+        if (!demoMode) return;
 
         event.preventDefault();
 
