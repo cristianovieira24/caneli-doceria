@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
 import { LeadForm } from "./lead-form";
+import { getFunctionalDemoMode } from "@/lib/site-mode";
 
-const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
+const DEMO_INSTALLATION =
+  process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
 
 export const metadata: Metadata = {
   title: "Encomendas",
-  description: DEMO_MODE
-    ? "Demonstração do fluxo de encomendas da Caneli Doceria. Nenhuma solicitação real é enviada."
+  description: DEMO_INSTALLATION
+    ? "Demonstração do fluxo de encomendas da Caneli Doceria."
     : "Bolos, tortas, cestas e kits para presentear. Faça seu pedido de encomenda na Caneli Doceria.",
 };
 
-export default function EncomendasPage() {
+export default async function EncomendasPage() {
+  const demoMode = await getFunctionalDemoMode();
+
   return (
     <div className="section py-12">
       <p className="eyebrow">para ocasiões especiais</p>
@@ -20,7 +24,7 @@ export default function EncomendasPage() {
       </h1>
 
       <p className="mt-3 max-w-[60ch] text-ink-soft">
-        {DEMO_MODE
+        {demoMode
           ? "Experimente abaixo como funciona o fluxo de encomendas. Nesta demonstração, nenhum dado será enviado e nenhuma solicitação real será criada."
           : "Preencha os detalhes abaixo e a equipe entra em contato para confirmar disponibilidade e valor."}
       </p>

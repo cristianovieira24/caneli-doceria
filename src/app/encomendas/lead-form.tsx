@@ -4,8 +4,7 @@ import { useEffect } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { submitLead, type LeadFormState } from "./actions";
 import { track } from "@/lib/analytics";
-
-const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
+import { useSiteMode } from "@/components/site-mode-provider";
 
 const initialState: LeadFormState = { status: "idle" };
 
@@ -20,17 +19,18 @@ const ORDER_TYPES = [
 ];
 
 export function LeadForm() {
+  const { demoMode } = useSiteMode();
   const [state, formAction] = useFormState(submitLead, initialState);
 
   useEffect(() => {
-    if (!DEMO_MODE && state.status === "success") {
+    if (!demoMode && state.status === "success") {
       track("lead_submitted");
     }
-  }, [state.status]);
+  }, [demoMode, state.status]);
 
   return (
     <form action={formAction} className="mt-8 grid gap-5 sm:grid-cols-2">
-      {DEMO_MODE && (
+      {demoMode && (
         <div className="sm:col-span-2 rounded-card border border-dashed border-pine/25 bg-pine/5 px-5 py-4 text-sm text-ink-soft">
           <strong className="text-pine">Modo demonstração:</strong>{" "}
           você pode preencher e testar todo o formulário, mas nenhuma
@@ -127,7 +127,7 @@ export function LeadForm() {
           required
         />
 
-        {DEMO_MODE
+        {demoMode
           ? "Estou ciente de que este envio é apenas uma simulação de demonstração e não será encaminhado à Caneli."
           : "Autorizo a Caneli a entrar em contato pelo WhatsApp para tratar desta encomenda."}
       </label>
@@ -138,7 +138,7 @@ export function LeadForm() {
         </p>
       )}
 
-      <SubmitButton />
+      <SubmitButton demoMode={demoMode} />
 
       {state.status === "success" && (
         <p
@@ -159,7 +159,7 @@ export function LeadForm() {
       )}
 
       <p className="sm:col-span-2 text-xs text-ink-soft/70">
-        {DEMO_MODE
+        {demoMode
           ? "Demonstração: o preenchimento deste formulário é apenas uma simulação e nenhuma solicitação real será criada."
           : "O envio deste formulário não representa confirmação automática da encomenda — o valor e a disponibilidade são confirmados pela equipe."}
       </p>
@@ -167,7 +167,7 @@ export function LeadForm() {
   );
 }
 
-function SubmitButton() {
+function SubmitButton({ demoMode }: { demoMode: boolean }) {
   const { pending } = useFormStatus();
 
   return (
@@ -177,10 +177,10 @@ function SubmitButton() {
       className="sm:col-span-2 rounded-full bg-pine px-7 py-3.5 text-sm font-medium text-cream-soft hover:bg-pine-dark disabled:opacity-60"
     >
       {pending
-        ? DEMO_MODE
+        ? demoMode
           ? "Simulando…"
           : "Enviando…"
-        : DEMO_MODE
+        : demoMode
           ? "Simular envio da encomenda"
           : "Enviar pedido de encomenda"}
     </button>
