@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { getFunctionalDemoMode } from "@/lib/site-mode";
 
+const DEMO_INSTALLATION =
+  process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
+
 export const metadata: Metadata = {
   title: "Política de privacidade",
   robots: { index: false, follow: true },
@@ -40,18 +43,40 @@ export default async function PrivacidadePage() {
               sobre tratamento de dados, retenção e direitos previstos na LGPD.
             </p>
           </>
-        ) : (
+        ) : DEMO_INSTALLATION ? (
           <>
             <p>
-              Dados enviados pelo formulário de encomendas, como nome,
-              WhatsApp, tipo de pedido e detalhes, são usados para tratar aquela
-              solicitação.
+              As funcionalidades comerciais desta apresentação estão
+              temporariamente liberadas. Dados enviados pelo formulário de
+              encomendas, como nome, WhatsApp, tipo de pedido e detalhes, podem
+              ser armazenados para permitir a demonstração do fluxo completo.
             </p>
 
             <p>
-              Nesta instalação de apresentação, ferramentas de análise e
-              rastreamento permanecem desativadas enquanto a proteção fixa de
-              demonstração estiver ativa.
+              A proteção fixa desta instalação continua ativa: ferramentas de
+              análise e rastreamento permanecem desativadas e o projeto continua
+              protegido contra indexação enquanto
+              NEXT_PUBLIC_DEMO_MODE estiver ativo.
+            </p>
+
+            <p className="rounded-card border border-dashed border-ink/15 bg-cream-soft/60 px-5 py-4 text-sm">
+              Este modo é destinado apenas à apresentação do projeto. Antes de
+              uma publicação oficial, a política de privacidade deverá ser
+              revisada e completada pela Caneli ou por um profissional jurídico.
+            </p>
+          </>
+        ) : (
+          <>
+            <p>
+              Este site pode utilizar ferramentas de análise e rastreamento
+              somente conforme as preferências de consentimento exibidas ao
+              visitante.
+            </p>
+
+            <p>
+              Dados enviados pelo formulário de encomendas, como nome,
+              WhatsApp, tipo de pedido e detalhes, são usados para tratar a
+              solicitação enviada.
             </p>
 
             <p className="rounded-card border border-dashed border-ink/15 bg-cream-soft/60 px-5 py-4 text-sm">
