@@ -1,41 +1,41 @@
 import type { Config } from "tailwindcss";
 
-// Design tokens — Caneli Doceria
-// Extracted from real brand material: café interior (arched blush doorway,
-// marble tables), campaign graphics (blush pink + pine-green script logo),
-// pastry photography (caramel/terracotta tones), gold foil "Dia dos Avós" card.
+// Design tokens — Caneli Doceria.
+// Colors are backed by CSS variables so light/dark themes can swap the full
+// visual system without duplicating classes throughout the app.
 const config: Config = {
+  darkMode: "class",
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
         cream: {
-          DEFAULT: "#FBF3EC",
-          soft: "#FFFBF7",
-          deep: "#F2E6D8",
+          DEFAULT: "rgb(var(--cream) / <alpha-value>)",
+          soft: "rgb(var(--cream-soft) / <alpha-value>)",
+          deep: "rgb(var(--cream-deep) / <alpha-value>)",
         },
         blush: {
-          DEFAULT: "#F3CFC6",
-          light: "#F9E4DE",
-          dark: "#E8AFA1",
+          DEFAULT: "rgb(var(--blush) / <alpha-value>)",
+          light: "rgb(var(--blush-light) / <alpha-value>)",
+          dark: "rgb(var(--blush-dark) / <alpha-value>)",
         },
         pine: {
-          DEFAULT: "#33473A",
-          light: "#4C6353",
-          dark: "#20301F",
+          DEFAULT: "rgb(var(--pine) / <alpha-value>)",
+          light: "rgb(var(--pine-light) / <alpha-value>)",
+          dark: "rgb(var(--pine-dark) / <alpha-value>)",
         },
         terracotta: {
-          DEFAULT: "#C0703F",
-          light: "#D68F5F",
-          dark: "#9C5730",
+          DEFAULT: "rgb(var(--terracotta) / <alpha-value>)",
+          light: "rgb(var(--terracotta-light) / <alpha-value>)",
+          dark: "rgb(var(--terracotta-dark) / <alpha-value>)",
         },
         ink: {
-          DEFAULT: "#2B2420",
-          soft: "#5B5148",
+          DEFAULT: "rgb(var(--ink) / <alpha-value>)",
+          soft: "rgb(var(--ink-soft) / <alpha-value>)",
         },
         gold: {
-          DEFAULT: "#B98A3E",
-          light: "#D9B876",
+          DEFAULT: "rgb(var(--gold) / <alpha-value>)",
+          light: "rgb(var(--gold-light) / <alpha-value>)",
         },
       },
       fontFamily: {
@@ -44,24 +44,50 @@ const config: Config = {
         body: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       borderRadius: {
-        arch: "999px 999px 20px 20px",
-        card: "22px",
+        arch: "999px 999px 24px 24px",
+        card: "24px",
+        pastry: "30px 30px 58px 30px",
+        blob: "46% 54% 62% 38% / 48% 42% 58% 52%",
       },
       boxShadow: {
-        soft: "0 8px 30px -12px rgba(43, 36, 32, 0.18)",
-        lift: "0 16px 40px -16px rgba(43, 36, 32, 0.28)",
+        soft: "0 10px 34px -18px rgb(var(--shadow-color) / 0.28)",
+        lift: "0 20px 52px -24px rgb(var(--shadow-color) / 0.42)",
+        float: "0 28px 80px -36px rgb(var(--shadow-color) / 0.5)",
       },
       maxWidth: {
         content: "1240px",
       },
+      opacity: {
+        "15": "0.15",
+        "35": "0.35",
+        "45": "0.45",
+        "55": "0.55",
+        "65": "0.65",
+        "85": "0.85",
+      },
       keyframes: {
         "fade-up": {
-          "0%": { opacity: "0", transform: "translateY(12px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
+          "0%": { opacity: "0", transform: "translateY(16px) scale(.985)", filter: "blur(5px)" },
+          "100%": { opacity: "1", transform: "translateY(0) scale(1)", filter: "blur(0)" },
+        },
+        float: {
+          "0%, 100%": { transform: "translate3d(0, 0, 0) rotate(0deg)" },
+          "50%": { transform: "translate3d(0, -10px, 0) rotate(2deg)" },
+        },
+        "float-reverse": {
+          "0%, 100%": { transform: "translate3d(0, 0, 0) rotate(0deg)" },
+          "50%": { transform: "translate3d(0, 8px, 0) rotate(-2deg)" },
+        },
+        "soft-pop": {
+          "0%": { opacity: "0", transform: "scale(.92) rotate(-2deg)" },
+          "100%": { opacity: "1", transform: "scale(1) rotate(0)" },
         },
       },
       animation: {
-        "fade-up": "fade-up 0.6s ease-out both",
+        "fade-up": "fade-up .8s cubic-bezier(.16,1,.3,1) both",
+        "float-slow": "float 7s ease-in-out infinite",
+        "float-reverse": "float-reverse 9s ease-in-out infinite",
+        "soft-pop": "soft-pop .7s cubic-bezier(.16,1,.3,1) both",
       },
     },
   },
