@@ -23,16 +23,11 @@ export function CampaignBanner({ campaign }: { campaign: Campaign }) {
             alt=""
             fill
             sizes="100vw"
-            className="object-cover transition-transform duration-[1400ms] ease-out hover:scale-[1.02]"
+            className="object-cover transition-transform duration-[1400ms] ease-out hover:scale-[1.018]"
           />
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent" />
-
-        <div
-          aria-hidden
-          className="absolute -right-5 -top-6 h-24 w-24 rounded-full border-[9px] border-blush/45"
-        />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/82 via-ink/18 to-transparent" />
 
         <div className="relative z-10 p-5 text-cream-soft min-[380px]:p-6 sm:p-10">
           {campaign.subtitle && (

@@ -17,7 +17,7 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
     setDark(nextDark);
     document.documentElement.classList.toggle("dark", nextDark);
     document.documentElement.style.colorScheme = nextDark ? "dark" : "light";
-    window.localStorage.setItem("caneli-theme", nextDark ? "dark" : "light");
+    window.localStorage.setItem("caneli-theme-v2", nextDark ? "dark" : "light");
   }
 
   return (

@@ -18,10 +18,6 @@ export default async function EncomendasPage() {
 
   return (
     <div className="section relative py-8 sm:py-12">
-      <div
-        aria-hidden
-        className="pastry-sprinkles pointer-events-none absolute right-0 top-0 hidden h-40 w-48 opacity-30 [mask-image:linear-gradient(to_left,black,transparent)] md:block"
-      />
 
       <Reveal>
         <p className="eyebrow">para ocasiões especiais</p>

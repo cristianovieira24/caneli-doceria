@@ -14,18 +14,14 @@ export function CategoryCard({ category }: { category: Category }) {
           alt=""
           fill
           sizes="208px"
-          className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
+          className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.045]"
         />
       ) : (
         <div className="pastry-surface absolute inset-0" />
       )}
 
-      <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent" />
-
-      <div
-        aria-hidden
-        className="absolute right-3 top-3 h-9 w-9 rounded-full border-[5px] border-cream-soft/45 opacity-0 transition-all duration-500 group-hover:rotate-12 group-hover:opacity-100"
-      />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/72 via-ink/8 to-transparent" />
+      <div className="absolute inset-0 ring-1 ring-inset ring-cream-soft/15" />
 
       <span className="relative z-10 p-4 font-display text-lg leading-tight text-cream-soft sm:p-5">
         {category.name}

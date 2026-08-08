@@ -27,10 +27,6 @@ export function StoreCard({ store }: { store: Store }) {
           </div>
         )}
 
-        <div
-          aria-hidden
-          className="absolute -right-3 -top-3 h-14 w-14 rounded-full border-[6px] border-cream-soft/55 shadow-soft"
-        />
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-2 p-5">

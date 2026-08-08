@@ -67,8 +67,8 @@ const config: Config = {
       },
       keyframes: {
         "fade-up": {
-          "0%": { opacity: "0", transform: "translateY(16px) scale(.985)", filter: "blur(5px)" },
-          "100%": { opacity: "1", transform: "translateY(0) scale(1)", filter: "blur(0)" },
+          "0%": { opacity: "0", transform: "translateY(14px) scale(.99)" },
+          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
         },
         float: {
           "0%, 100%": { transform: "translate3d(0, 0, 0) rotate(0deg)" },
@@ -84,7 +84,7 @@ const config: Config = {
         },
       },
       animation: {
-        "fade-up": "fade-up .8s cubic-bezier(.16,1,.3,1) both",
+        "fade-up": "fade-up .76s cubic-bezier(.22,1,.36,1) both",
         "float-slow": "float 7s ease-in-out infinite",
         "float-reverse": "float-reverse 9s ease-in-out infinite",
         "soft-pop": "soft-pop .7s cubic-bezier(.16,1,.3,1) both",

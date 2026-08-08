@@ -9,8 +9,8 @@ export function Reveal({
   delay = 0,
   className = "",
   direction = "up",
-  distance = 28,
-  scale = 0.985,
+  distance = 24,
+  scale = 0.99,
 }: {
   children: React.ReactNode;
   delay?: number;
@@ -44,7 +44,7 @@ export function Reveal({
       },
       {
         threshold: 0.1,
-        rootMargin: "0px 0px -7% 0px",
+        rootMargin: "0px 0px -6% 0px",
       }
     );
 
@@ -76,12 +76,11 @@ export function Reveal({
         transform: visible
           ? "translate3d(0, 0, 0) scale(1)"
           : `${translate} scale(${scale})`,
-        filter: visible ? "blur(0px)" : "blur(5px)",
-        transitionProperty: "opacity, transform, filter",
-        transitionDuration: "900ms",
+        transitionProperty: "opacity, transform",
+        transitionDuration: "780ms",
         transitionDelay: visible ? `${delay}ms` : "0ms",
-        transitionTimingFunction: "cubic-bezier(.16, 1, .3, 1)",
-        willChange: visible ? "auto" : "opacity, transform, filter",
+        transitionTimingFunction: "cubic-bezier(.22, 1, .36, 1)",
+        willChange: visible ? "auto" : "opacity, transform",
       }}
     >
       {children}

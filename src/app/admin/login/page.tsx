@@ -13,17 +13,7 @@ export default function LoginPage() {
   const next = searchParams.get("next") || "/admin";
 
   return (
-    <div className="pastry-surface relative flex min-h-[100dvh] items-center justify-center overflow-hidden bg-cream px-4 py-8 min-[380px]:px-5">
-      <div
-        aria-hidden
-        className="absolute -left-8 top-[12%] h-28 w-28 animate-float-slow rounded-full border-[10px] border-blush/45"
-      />
-      <div
-        aria-hidden
-        className="absolute -right-5 bottom-[14%] hidden animate-float-reverse sm:block"
-      >
-        <div className="macaron-stack" />
-      </div>
+    <div className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden bg-cream px-4 py-8 min-[380px]:px-5">
 
       <div className="absolute right-4 top-4 z-10 sm:right-6 sm:top-6">
         <ThemeToggle compact />

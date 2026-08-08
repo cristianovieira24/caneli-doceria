@@ -113,12 +113,7 @@ export default async function HomePage() {
         </Reveal>
       )}
 
-      <section className="section relative py-14 sm:py-20">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-10 top-8 hidden h-24 w-24 rounded-full border-[9px] border-blush/35 md:block"
-        />
-
+      <section className="section py-14 sm:py-20">
         <Reveal>
           <div className="flex items-end justify-between gap-4">
             <div>
@@ -162,8 +157,8 @@ export default async function HomePage() {
         </Link>
       </section>
 
-      <section className="scallop-section bg-blush-light py-16 sm:py-20">
-        <div className="section">
+      <section className="section py-6 sm:py-10">
+        <div className="display-case-section px-5 py-12 sm:px-8 sm:py-16 lg:px-10">
           <Reveal direction="right">
             <p className="eyebrow">o cardápio</p>
             <h2 className="mt-1 max-w-[22ch] text-3xl sm:text-4xl">
@@ -191,12 +186,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="section relative py-16 sm:py-20">
-        <div
-          aria-hidden
-          className="pastry-sprinkles pointer-events-none absolute inset-y-10 right-0 hidden w-48 opacity-35 [mask-image:linear-gradient(to_left,black,transparent)] lg:block"
-        />
-
+      <section className="section py-16 sm:py-20">
         <Reveal>
           <p className="eyebrow">nossas lojas</p>
           <h2 className="mt-1 max-w-[24ch] text-3xl sm:text-4xl">
@@ -223,18 +213,7 @@ export default async function HomePage() {
 
       <section className="section pb-16 sm:pb-24">
         <Reveal direction="up" distance={32} scale={0.97}>
-          <div className="frosting-panel pastry-sprinkles relative bg-pine px-5 py-12 text-center text-cream-soft shadow-float sm:px-12 sm:py-16">
-            <div
-              aria-hidden
-              className="absolute -left-4 -top-5 h-20 w-20 animate-float-slow rounded-full border-[8px] border-blush/55 opacity-80"
-            />
-            <div
-              aria-hidden
-              className="absolute -bottom-5 right-[8%] hidden animate-float-reverse sm:block"
-            >
-              <div className="macaron-stack" />
-            </div>
-
+          <div className="frosting-panel relative bg-pine px-5 py-12 text-center text-cream-soft shadow-float sm:px-12 sm:py-16">
             <p className="eyebrow text-blush">vamos combinar?</p>
 
             <h2 className="mx-auto mt-2 max-w-[20ch] text-3xl text-cream-soft sm:text-4xl lg:text-5xl">

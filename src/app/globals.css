@@ -68,10 +68,7 @@
     @apply min-h-screen bg-cream font-body text-ink antialiased;
     min-width: 320px;
     overflow-x: clip;
-    background-image:
-      radial-gradient(circle at 8% 7%, rgb(var(--blush) / 0.13) 0, rgb(var(--blush) / 0.13) 9rem, transparent 9.2rem),
-      radial-gradient(circle at 92% 28%, rgb(var(--gold) / 0.07) 0, rgb(var(--gold) / 0.07) 8rem, transparent 8.2rem);
-    transition: background-color 320ms ease, color 320ms ease;
+    transition: background-color 260ms ease, color 260ms ease;
   }
 
   h1,
@@ -117,6 +114,10 @@
 }
 
 @layer components {
+  /*
+   * Formas da marca: assimétricas, mas controladas. A identidade vem de
+   * molduras, recortes e fotografia — não de patterns repetitivos.
+   */
   .pastry-card {
     border-radius: 28px 28px 54px 28px;
     border: 1px solid rgb(var(--ink) / 0.055);
@@ -126,19 +127,15 @@
     border-color: rgb(var(--pine) / 0.14);
   }
 
+  /* Placeholder limpo para fotos ainda não cadastradas. */
   .pastry-surface {
-    background-image:
-      radial-gradient(circle at 14% 20%, rgb(var(--blush) / 0.22) 0 7rem, transparent 7.15rem),
-      radial-gradient(circle at 88% 76%, rgb(var(--gold) / 0.1) 0 6rem, transparent 6.15rem),
-      linear-gradient(135deg, rgb(var(--cream-soft) / 0.72), rgb(var(--cream) / 0.88));
+    background:
+      linear-gradient(145deg, rgb(var(--cream-soft)) 0%, rgb(var(--blush-light) / 0.62) 100%);
   }
 
+  /* Mantido por compatibilidade com páginas antigas; não desenha pattern. */
   .pastry-sprinkles {
-    background-image:
-      linear-gradient(32deg, transparent 47%, rgb(var(--terracotta) / 0.13) 48% 52%, transparent 53%),
-      linear-gradient(118deg, transparent 47%, rgb(var(--pine) / 0.09) 48% 52%, transparent 53%),
-      radial-gradient(circle, rgb(var(--gold) / 0.14) 0 1.5px, transparent 1.8px);
-    background-size: 48px 48px, 62px 62px, 36px 36px;
+    background: none;
   }
 
   .frosting-panel {
@@ -151,96 +148,68 @@
   .frosting-panel::before {
     content: "";
     position: absolute;
-    inset: 0;
-    z-index: -1;
+    inset: 10px;
+    z-index: 0;
     pointer-events: none;
-    background:
-      radial-gradient(circle at 12% 22%, rgb(var(--blush-light) / 0.16) 0 5rem, transparent 5.2rem),
-      radial-gradient(circle at 86% 82%, rgb(var(--gold-light) / 0.11) 0 5.5rem, transparent 5.7rem);
+    border: 1px solid rgb(var(--cream-soft) / 0.13);
+    border-radius: 24px 24px 68px 24px;
   }
 
+  .display-case-section {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgb(var(--ink) / 0.055);
+    border-radius: 36px 36px 72px 36px;
+    background: rgb(var(--blush-light));
+  }
+
+  .display-case-section::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    box-shadow: inset 0 1px 0 rgb(var(--cream-soft) / 0.48);
+    border-radius: inherit;
+  }
+
+  /* Classes antigas neutralizadas para não reaparecerem como decoração solta. */
   .scallop-section {
     position: relative;
   }
 
   .scallop-section::before,
-  .scallop-section::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 22px;
-    pointer-events: none;
-    background:
-      radial-gradient(circle at 11px 11px, rgb(var(--blush-light)) 10px, transparent 10.5px) 0 0 / 22px 22px repeat-x;
-  }
-
-  .scallop-section::before {
-    top: -11px;
-  }
-
-  .scallop-section::after {
-    bottom: -11px;
-    transform: rotate(180deg);
+  .scallop-section::after,
+  .footer-frosting::before {
+    content: none;
   }
 
   .footer-frosting {
     position: relative;
   }
 
-  .footer-frosting::before {
-    content: "";
-    position: absolute;
-    top: -12px;
-    left: 0;
-    right: 0;
-    height: 24px;
-    pointer-events: none;
-    background:
-      radial-gradient(circle at 12px 12px, rgb(var(--cream-deep)) 11px, transparent 11.5px) 0 0 / 24px 24px repeat-x;
-  }
-
-  .pastry-ring {
-    border: 10px solid rgb(var(--blush) / 0.55);
-    box-shadow:
-      inset 0 0 0 1px rgb(var(--cream-soft) / 0.3),
-      0 14px 36px -22px rgb(var(--shadow-color) / 0.4);
-  }
-
+  .pastry-ring,
   .macaron-stack {
-    position: relative;
-    width: 54px;
-    height: 34px;
-    border-radius: 999px;
-    background: rgb(var(--terracotta) / 0.78);
-    box-shadow:
-      inset 0 -7px 0 rgb(var(--cream-soft) / 0.36),
-      inset 0 7px 0 rgb(var(--terracotta-light) / 0.28);
+    display: none;
   }
 
-  .macaron-stack::before,
-  .macaron-stack::after {
+  .brand-ticket {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    border: 1px solid rgb(var(--ink) / 0.08);
+    border-radius: 14px 14px 24px 14px;
+    background: rgb(var(--cream-soft) / 0.94);
+    color: rgb(var(--ink-soft));
+    box-shadow: 0 12px 32px -24px rgb(var(--shadow-color) / 0.55);
+    backdrop-filter: blur(10px);
+  }
+
+  .brand-ticket::before {
     content: "";
-    position: absolute;
-    width: 42px;
-    height: 26px;
-    border-radius: 999px;
-  }
-
-  .macaron-stack::before {
-    left: -21px;
-    top: 20px;
-    background: rgb(var(--blush-dark) / 0.78);
-    box-shadow: inset 0 -6px 0 rgb(var(--cream-soft) / 0.28);
-    transform: rotate(-14deg);
-  }
-
-  .macaron-stack::after {
-    right: -18px;
-    top: 24px;
-    background: rgb(var(--gold) / 0.72);
-    box-shadow: inset 0 -6px 0 rgb(var(--cream-soft) / 0.24);
-    transform: rotate(12deg);
+    width: 1.15rem;
+    height: 1px;
+    flex: 0 0 auto;
+    background: rgb(var(--terracotta) / 0.72);
   }
 }
 
@@ -300,20 +269,13 @@
     border-radius: 26px 26px 58px 26px;
   }
 
-  .scallop-section::before,
-  .scallop-section::after {
-    height: 18px;
-    background-size: 18px 18px;
-    background-image:
-      radial-gradient(circle at 9px 9px, rgb(var(--blush-light)) 8px, transparent 8.5px);
+  .frosting-panel::before {
+    inset: 7px;
+    border-radius: 20px 20px 48px 20px;
   }
 
-  .scallop-section::before {
-    top: -9px;
-  }
-
-  .scallop-section::after {
-    bottom: -9px;
+  .display-case-section {
+    border-radius: 26px 26px 48px 26px;
   }
 }
 

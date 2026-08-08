@@ -37,9 +37,8 @@ const inter = Inter({
 const themeInitScript = `
   (function () {
     try {
-      var saved = localStorage.getItem("caneli-theme");
-      var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      var dark = saved === "dark" || (!saved && prefersDark);
+      var saved = localStorage.getItem("caneli-theme-v2");
+      var dark = saved === "dark";
       document.documentElement.classList.toggle("dark", dark);
       document.documentElement.style.colorScheme = dark ? "dark" : "light";
     } catch (e) {}

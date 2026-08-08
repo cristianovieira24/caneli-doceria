@@ -151,11 +151,6 @@ export default async function ProductPage({
                 Foto em breve
               </div>
             )}
-
-            <div
-              aria-hidden
-              className="absolute -right-4 -top-4 h-20 w-20 rounded-full border-[7px] border-cream-soft/50"
-            />
           </div>
         </Reveal>
 
