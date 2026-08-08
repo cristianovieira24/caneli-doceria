@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LeadForm } from "./lead-form";
+import { Reveal } from "@/components/reveal";
 import { getFunctionalDemoMode } from "@/lib/site-mode";
 
 const DEMO_INSTALLATION =
@@ -16,20 +17,31 @@ export default async function EncomendasPage() {
   const demoMode = await getFunctionalDemoMode();
 
   return (
-    <div className="section py-12">
-      <p className="eyebrow">para ocasiões especiais</p>
+    <div className="section relative py-8 sm:py-12">
+      <div
+        aria-hidden
+        className="pastry-sprinkles pointer-events-none absolute right-0 top-0 hidden h-40 w-48 opacity-30 [mask-image:linear-gradient(to_left,black,transparent)] md:block"
+      />
 
-      <h1 className="mt-1 max-w-[24ch] text-4xl">
-        Bolos, tortas e cestas para presentear
-      </h1>
+      <Reveal>
+        <p className="eyebrow">para ocasiões especiais</p>
 
-      <p className="mt-3 max-w-[60ch] text-ink-soft">
-        {demoMode
-          ? "Experimente abaixo como funciona o fluxo de encomendas. Nesta demonstração, nenhum dado será enviado e nenhuma solicitação real será criada."
-          : "Preencha os detalhes abaixo e a equipe entra em contato para confirmar disponibilidade e valor."}
-      </p>
+        <h1 className="mt-1 max-w-[24ch] text-3xl min-[380px]:text-4xl">
+          Bolos, tortas e cestas para presentear
+        </h1>
 
-      <LeadForm />
+        <p className="mt-3 max-w-[60ch] text-sm leading-relaxed text-ink-soft sm:text-base">
+          {demoMode
+            ? "Experimente abaixo como funciona o fluxo de encomendas. Nesta demonstração, nenhum dado será enviado e nenhuma solicitação real será criada."
+            : "Preencha os detalhes abaixo e a equipe entra em contato para confirmar disponibilidade e valor."}
+        </p>
+      </Reveal>
+
+      <Reveal delay={90} distance={20}>
+        <div className="max-w-4xl">
+          <LeadForm />
+        </div>
+      </Reveal>
     </div>
   );
 }

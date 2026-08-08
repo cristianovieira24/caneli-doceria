@@ -29,9 +29,12 @@ export function LeadForm() {
   }, [demoMode, state.status]);
 
   return (
-    <form action={formAction} className="mt-8 grid gap-5 sm:grid-cols-2">
+    <form
+      action={formAction}
+      className="pastry-card mt-8 grid gap-5 bg-cream-soft/75 p-4 shadow-soft sm:grid-cols-2 sm:p-6 lg:p-7"
+    >
       {demoMode && (
-        <div className="sm:col-span-2 rounded-card border border-dashed border-pine/25 bg-pine/5 px-5 py-4 text-sm text-ink-soft">
+        <div className="rounded-xl border border-dashed border-pine/20 bg-pine/5 px-4 py-4 text-sm leading-relaxed text-ink-soft sm:col-span-2 sm:px-5">
           <strong className="text-pine">Modo demonstração:</strong>{" "}
           você pode preencher e testar todo o formulário, mas nenhuma
           informação será enviada à Caneli ou salva como lead.
@@ -50,6 +53,7 @@ export function LeadForm() {
         <input
           name="whatsapp"
           type="tel"
+          inputMode="tel"
           placeholder="(62) 90000-0000"
           required
           className="input"
@@ -87,6 +91,7 @@ export function LeadForm() {
         <input
           name="peopleCount"
           type="number"
+          inputMode="numeric"
           min={1}
           className="input"
         />
@@ -112,28 +117,30 @@ export function LeadForm() {
         >
           <textarea
             name="description"
-            rows={4}
+            rows={5}
             required
             className="input"
           />
         </Field>
       </div>
 
-      <label className="flex items-start gap-2 text-sm text-ink-soft sm:col-span-2">
+      <label className="flex items-start gap-3 rounded-xl bg-cream px-4 py-3 text-sm leading-relaxed text-ink-soft sm:col-span-2">
         <input
           type="checkbox"
           name="consent"
-          className="mt-1"
+          className="mt-1 h-4 w-4 shrink-0 accent-pine"
           required
         />
 
-        {demoMode
-          ? "Estou ciente de que este envio é apenas uma simulação de demonstração e não será encaminhado à Caneli."
-          : "Autorizo a Caneli a entrar em contato pelo WhatsApp para tratar desta encomenda."}
+        <span>
+          {demoMode
+            ? "Estou ciente de que este envio é apenas uma simulação de demonstração e não será encaminhado à Caneli."
+            : "Autorizo a Caneli a entrar em contato pelo WhatsApp para tratar desta encomenda."}
+        </span>
       </label>
 
       {state.fieldErrors?.consent && (
-        <p className="-mt-3 text-sm text-terracotta">
+        <p className="-mt-3 text-sm text-terracotta sm:col-span-2">
           {state.fieldErrors.consent}
         </p>
       )}
@@ -143,7 +150,7 @@ export function LeadForm() {
       {state.status === "success" && (
         <p
           role="status"
-          className="sm:col-span-2 rounded-card bg-pine/10 px-4 py-3 text-sm text-pine-dark"
+          className="rounded-xl bg-pine/10 px-4 py-3 text-sm leading-relaxed text-pine sm:col-span-2"
         >
           {state.message}
         </p>
@@ -152,13 +159,13 @@ export function LeadForm() {
       {state.status === "error" && state.message && (
         <p
           role="alert"
-          className="sm:col-span-2 rounded-card bg-terracotta/10 px-4 py-3 text-sm text-terracotta-dark"
+          className="rounded-xl bg-terracotta/10 px-4 py-3 text-sm leading-relaxed text-terracotta sm:col-span-2"
         >
           {state.message}
         </p>
       )}
 
-      <p className="sm:col-span-2 text-xs text-ink-soft/70">
+      <p className="text-xs leading-relaxed text-ink-soft/70 sm:col-span-2">
         {demoMode
           ? "Demonstração: o preenchimento deste formulário é apenas uma simulação e nenhuma solicitação real será criada."
           : "O envio deste formulário não representa confirmação automática da encomenda — o valor e a disponibilidade são confirmados pela equipe."}
@@ -174,7 +181,7 @@ function SubmitButton({ demoMode }: { demoMode: boolean }) {
     <button
       type="submit"
       disabled={pending}
-      className="sm:col-span-2 rounded-full bg-pine px-7 py-3.5 text-sm font-medium text-cream-soft hover:bg-pine-dark disabled:opacity-60"
+      className="rounded-full bg-pine px-7 py-3.5 text-sm font-medium text-cream-soft shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift disabled:translate-y-0 disabled:opacity-60 sm:col-span-2"
     >
       {pending
         ? demoMode
@@ -199,7 +206,7 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <div className="min-w-0">
       <label
         htmlFor={name}
         className="mb-1.5 block text-sm font-medium text-ink"

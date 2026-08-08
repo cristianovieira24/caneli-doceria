@@ -29,33 +29,50 @@ export function MenuExplorer({
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
+
     return products.filter((p) => {
-      if (activeCategory !== "all" && p.category_id !== activeCategory) return false;
-      if (query && !p.name.toLowerCase().includes(query) && !p.short_description?.toLowerCase().includes(query)) {
+      if (activeCategory !== "all" && p.category_id !== activeCategory) {
         return false;
       }
+
+      if (
+        query &&
+        !p.name.toLowerCase().includes(query) &&
+        !p.short_description?.toLowerCase().includes(query)
+      ) {
+        return false;
+      }
+
       if (activeTags.length > 0) {
         const productTagSlugs = p.tags?.map((t) => t.slug) ?? [];
         if (!activeTags.every((t) => productTagSlugs.includes(t))) return false;
       }
+
       return true;
     });
   }, [products, search, activeCategory, activeTags]);
 
-  function availabilityFor(product: Product): "available" | "unavailable" | "unknown" {
+  function availabilityFor(
+    product: Product
+  ): "available" | "unavailable" | "unknown" {
     if (!storeId) return "unknown";
+
     const link = product.store_products?.find((sp) => sp.store_id === storeId);
     if (!link || link.hidden) return "unavailable";
+
     return link.available ? "available" : "unavailable";
   }
 
   return (
-    <div>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="min-w-0">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <StoreSelector stores={stores} />
 
-        <div className="relative sm:w-72">
-          <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-soft/60" />
+        <div className="relative w-full sm:w-72">
+          <Search
+            size={16}
+            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-soft/60"
+          />
           <input
             type="search"
             value={search}
@@ -68,34 +85,47 @@ export function MenuExplorer({
       </div>
 
       {!storeId && (
-        <p className="mt-4 rounded-card bg-blush-light px-4 py-3 text-sm text-ink-soft">
-          Escolha sua unidade acima para ver preço e disponibilidade exatos — eles podem variar
-          entre as lojas.
+        <p className="mt-4 rounded-pastry bg-blush-light px-4 py-3 text-sm leading-relaxed text-ink-soft">
+          Escolha sua unidade acima para ver preço e disponibilidade exatos —
+          eles podem variar entre as lojas.
         </p>
       )}
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        <FilterPill active={activeCategory === "all"} onClick={() => setActiveCategory("all")}>
+      <div className="scrollbar-hide -mx-1 mt-6 flex gap-2 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:overflow-visible">
+        <FilterPill
+          active={activeCategory === "all"}
+          onClick={() => setActiveCategory("all")}
+        >
           Tudo
         </FilterPill>
+
         {categories.map((c) => (
-          <FilterPill key={c.id} active={activeCategory === c.id} onClick={() => setActiveCategory(c.id)}>
+          <FilterPill
+            key={c.id}
+            active={activeCategory === c.id}
+            onClick={() => setActiveCategory(c.id)}
+          >
             {c.name}
           </FilterPill>
         ))}
       </div>
 
       {dietTags.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="scrollbar-hide -mx-1 mt-3 flex gap-2 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:overflow-visible">
           {dietTags.map((tag) => {
             const active = activeTags.includes(tag.slug);
+
             return (
               <FilterPill
                 key={tag.id}
                 active={active}
                 variant="tag"
                 onClick={() =>
-                  setActiveTags((prev) => (active ? prev.filter((t) => t !== tag.slug) : [...prev, tag.slug]))
+                  setActiveTags((prev) =>
+                    active
+                      ? prev.filter((t) => t !== tag.slug)
+                      : [...prev, tag.slug]
+                  )
                 }
               >
                 {tag.name}
@@ -106,14 +136,19 @@ export function MenuExplorer({
       )}
 
       {filtered.length > 0 ? (
-        <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-8 grid grid-cols-1 gap-4 min-[380px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 lg:gap-5">
           {filtered.map((product) => (
-            <ProductCard key={product.id} product={product} availability={availabilityFor(product)} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              availability={availabilityFor(product)}
+            />
           ))}
         </div>
       ) : (
-        <div className="mt-10 rounded-card border border-dashed border-ink/15 bg-cream-soft/60 px-6 py-10 text-center text-sm text-ink-soft">
-          Nada encontrado com esses filtros. Tente limpar a busca ou escolher outra categoria.
+        <div className="mt-10 rounded-pastry border border-dashed border-ink/15 bg-cream-soft/60 px-6 py-10 text-center text-sm text-ink-soft">
+          Nada encontrado com esses filtros. Tente limpar a busca ou escolher
+          outra categoria.
         </div>
       )}
     </div>
@@ -137,12 +172,12 @@ function FilterPill({
       onClick={onClick}
       aria-pressed={active}
       className={
-        "rounded-full border px-4 py-2 text-sm transition-colors " +
+        "shrink-0 rounded-full border px-4 py-2.5 text-sm transition-all duration-300 " +
         (active
           ? variant === "tag"
-            ? "border-terracotta bg-terracotta text-cream-soft"
-            : "border-pine bg-pine text-cream-soft"
-          : "border-ink/15 bg-cream-soft text-ink-soft hover:border-pine hover:text-pine")
+            ? "border-terracotta bg-terracotta text-cream-soft shadow-soft"
+            : "border-pine bg-pine text-cream-soft shadow-soft"
+          : "border-ink/15 bg-cream-soft text-ink-soft hover:-translate-y-0.5 hover:border-pine hover:text-pine")
       }
     >
       {children}

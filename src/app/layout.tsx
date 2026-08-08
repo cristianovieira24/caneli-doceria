@@ -34,6 +34,18 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const themeInitScript = `
+  (function () {
+    try {
+      var saved = localStorage.getItem("caneli-theme");
+      var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      var dark = saved === "dark" || (!saved && prefersDark);
+      document.documentElement.classList.toggle("dark", dark);
+      document.documentElement.style.colorScheme = dark ? "dark" : "light";
+    } catch (e) {}
+  })();
+`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(
     DEMO_INSTALLATION
@@ -75,17 +87,18 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  /**
-   * Esse é o modo funcional dinâmico.
-   * Ele vem de site_settings.demo_mode.
-   */
   const demoMode = await getFunctionalDemoMode();
 
   return (
     <html
       lang="pt-BR"
+      suppressHydrationWarning
       className={`${fraunces.variable} ${caveat.variable} ${inter.variable}`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+
       <body>
         <SiteModeProvider demoMode={demoMode}>
           <a
@@ -103,7 +116,6 @@ export default async function RootLayout({
           <CartDrawer />
         </SiteModeProvider>
 
-        {/* Analytics continua preso à trava fixa da instalação. */}
         {!DEMO_INSTALLATION && <ConsentBanner />}
         {!DEMO_INSTALLATION && <AnalyticsScripts />}
       </body>

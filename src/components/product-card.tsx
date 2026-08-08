@@ -11,56 +11,73 @@ export function ProductCard({
   product: Product;
   availability?: "available" | "unavailable" | "unknown";
 }) {
-  const primaryImage = product.images?.find((i) => i.is_primary) ?? product.images?.[0];
+  const primaryImage =
+    product.images?.find((i) => i.is_primary) ?? product.images?.[0];
   const isDraft = product.status !== "published";
   const isUnavailableHere = availability === "unavailable";
-  const needsCustomization = (product.variants?.length ?? 0) > 0 || (product.addons?.length ?? 0) > 0;
+  const needsCustomization =
+    (product.variants?.length ?? 0) > 0 ||
+    (product.addons?.length ?? 0) > 0;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-card bg-cream-soft shadow-soft transition-all duration-300 hover:shadow-lift hover:-translate-y-0.5">
-      <Link href={`/cardapio/${product.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-blush-light">
+    <article className="pastry-card group flex h-full min-w-0 flex-col overflow-hidden bg-cream-soft shadow-soft transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-lift">
+      <Link
+        href={`/cardapio/${product.slug}`}
+        className="relative block aspect-[4/3] overflow-hidden bg-blush-light"
+      >
         {primaryImage ? (
           <Image
             src={primaryImage.url}
             alt={primaryImage.alt || product.name}
             fill
-            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, (min-width: 380px) 50vw, 100vw"
+            className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.045]"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-ink-soft/60">
+          <div className="pastry-surface flex h-full items-center justify-center px-3 text-center text-sm text-ink-soft/60">
             Foto em breve
           </div>
         )}
+
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/10 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
         {product.seasonal && (
-          <span className="absolute left-3 top-3 rounded-full bg-gold px-3 py-1 text-xs font-medium text-cream-soft">
+          <span className="absolute left-3 top-3 rounded-full bg-gold px-3 py-1 text-xs font-medium text-cream-soft shadow-soft">
             Sazonal
           </span>
         )}
+
         {(isDraft || isUnavailableHere) && (
-          <span className="absolute inset-0 flex items-center justify-center bg-ink/40 text-center text-sm font-medium text-cream-soft px-3">
+          <span className="absolute inset-0 flex items-center justify-center bg-ink/45 px-3 text-center text-sm font-medium text-cream-soft backdrop-blur-[1px]">
             {isUnavailableHere ? "Indisponível nesta unidade" : "Indisponível"}
           </span>
         )}
       </Link>
 
-      <div className="flex flex-1 flex-col gap-2 p-4">
-        <Link href={`/cardapio/${product.slug}`}>
-          <h3 className="font-display text-lg leading-tight hover:text-pine transition-colors">{product.name}</h3>
+      <div className="flex min-w-0 flex-1 flex-col gap-2 p-4 sm:p-5">
+        <Link href={`/cardapio/${product.slug}`} className="min-w-0">
+          <h3 className="line-clamp-2 font-display text-lg leading-tight transition-colors group-hover:text-pine">
+            {product.name}
+          </h3>
         </Link>
+
         {product.short_description && (
-          <p className="line-clamp-2 text-sm text-ink-soft">{product.short_description}</p>
+          <p className="line-clamp-2 text-sm leading-relaxed text-ink-soft">
+            {product.short_description}
+          </p>
         )}
-        <div className="mt-auto flex items-center justify-between pt-2">
+
+        <div className="mt-auto flex min-w-0 flex-col items-stretch gap-2.5 pt-2 min-[440px]:flex-row min-[440px]:items-center min-[440px]:justify-between">
           <PriceTag product={product} />
+
           {needsCustomization ? (
             <Link
               href={`/cardapio/${product.slug}`}
               aria-disabled={isUnavailableHere}
               className={
-                "rounded-full border px-4 py-1.5 text-sm transition-colors " +
+                "rounded-full border px-4 py-2 text-center text-sm transition-all duration-300 min-[440px]:shrink-0 " +
                 (isUnavailableHere
-                  ? "border-ink/10 text-ink-soft/50 pointer-events-none"
+                  ? "pointer-events-none border-ink/10 text-ink-soft/50"
                   : "border-pine/30 text-pine hover:bg-pine hover:text-cream-soft")
               }
             >
@@ -77,16 +94,22 @@ export function ProductCard({
 
 function PriceTag({ product }: { product: Product }) {
   const prefix = product.price_prefix === "a partir de" ? "a partir de " : "";
+
   if (product.promo_price) {
     return (
-      <p className="text-sm">
-        <span className="mr-1.5 text-ink-soft/60 line-through">{formatBRL(product.price)}</span>
-        <span className="font-semibold text-terracotta">{formatBRL(product.promo_price)}</span>
+      <p className="min-w-0 text-sm leading-tight">
+        <span className="mr-1.5 text-ink-soft/60 line-through">
+          {formatBRL(product.price)}
+        </span>
+        <span className="font-semibold text-terracotta">
+          {formatBRL(product.promo_price)}
+        </span>
       </p>
     );
   }
+
   return (
-    <p className="text-sm font-semibold text-ink">
+    <p className="min-w-0 text-sm font-semibold leading-tight text-ink">
       {prefix}
       {formatBRL(product.price)}
     </p>

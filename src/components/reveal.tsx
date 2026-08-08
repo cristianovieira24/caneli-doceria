@@ -2,14 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 
+type Direction = "up" | "down" | "left" | "right" | "none";
+
 export function Reveal({
   children,
   delay = 0,
   className = "",
+  direction = "up",
+  distance = 28,
+  scale = 0.985,
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
+  direction?: Direction;
+  distance?: number;
+  scale?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -18,7 +26,10 @@ export function Reveal({
     const node = ref.current;
     if (!node) return;
 
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
     if (prefersReducedMotion) {
       setVisible(true);
       return;
@@ -31,17 +42,47 @@ export function Reveal({
           observer.disconnect();
         }
       },
-      { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
+      {
+        threshold: 0.1,
+        rootMargin: "0px 0px -7% 0px",
+      }
     );
+
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
 
+  const translate = (() => {
+    switch (direction) {
+      case "down":
+        return `translate3d(0, -${distance}px, 0)`;
+      case "left":
+        return `translate3d(${distance}px, 0, 0)`;
+      case "right":
+        return `translate3d(-${distance}px, 0, 0)`;
+      case "none":
+        return "translate3d(0, 0, 0)";
+      default:
+        return `translate3d(0, ${distance}px, 0)`;
+    }
+  })();
+
   return (
     <div
       ref={ref}
-      className={`transition-all duration-700 ease-out ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"} ${className}`}
-      style={{ transitionDelay: visible ? `${delay}ms` : "0ms" }}
+      className={className}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible
+          ? "translate3d(0, 0, 0) scale(1)"
+          : `${translate} scale(${scale})`,
+        filter: visible ? "blur(0px)" : "blur(5px)",
+        transitionProperty: "opacity, transform, filter",
+        transitionDuration: "900ms",
+        transitionDelay: visible ? `${delay}ms` : "0ms",
+        transitionTimingFunction: "cubic-bezier(.16, 1, .3, 1)",
+        willChange: visible ? "auto" : "opacity, transform, filter",
+      }}
     >
       {children}
     </div>

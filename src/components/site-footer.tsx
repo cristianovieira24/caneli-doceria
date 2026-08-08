@@ -32,12 +32,12 @@ export async function SiteFooter() {
   ]);
 
   return (
-    <footer className="border-t border-ink/10 bg-cream-deep">
-      <div className="section grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
+    <footer className="footer-frosting border-t border-ink/10 bg-cream-deep">
+      <div className="section grid gap-9 py-12 sm:grid-cols-2 sm:gap-10 sm:py-14 lg:grid-cols-4">
         <div>
-          <p className="font-script text-3xl text-pine">caneli</p>
+          <p className="font-script text-4xl leading-none text-pine">caneli</p>
 
-          <p className="mt-3 max-w-[26ch] text-sm text-ink-soft">
+          <p className="mt-3 max-w-[28ch] text-sm leading-relaxed text-ink-soft">
             Doces, cafés e dias felizes.
           </p>
 
@@ -45,9 +45,9 @@ export async function SiteFooter() {
             href={SOCIAL_LINKS.instagram}
             target="_blank"
             rel="noreferrer"
-            className="mt-4 inline-flex items-center gap-2 text-sm text-pine hover:text-pine-dark"
+            className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full border border-ink/10 bg-cream-soft/50 px-4 py-2 text-sm text-pine transition-colors hover:bg-blush-light"
           >
-            <Instagram size={18} /> @canelidoceria
+            <Instagram size={17} /> @canelidoceria
           </a>
         </div>
 
@@ -56,31 +56,27 @@ export async function SiteFooter() {
             Navegação
           </h3>
 
-          <ul className="mt-4 space-y-2 text-sm">
+          <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:block sm:space-y-2">
             <li>
               <Link href="/cardapio" className="hover:text-pine">
                 Cardápio
               </Link>
             </li>
-
             <li>
               <Link href="/unidades" className="hover:text-pine">
                 Unidades
               </Link>
             </li>
-
             <li>
               <Link href="/encomendas" className="hover:text-pine">
                 Encomendas
               </Link>
             </li>
-
             <li>
               <Link href="/sobre" className="hover:text-pine">
                 Sobre
               </Link>
             </li>
-
             <li>
               <Link href="/contato" className="hover:text-pine">
                 Contato
@@ -103,7 +99,7 @@ export async function SiteFooter() {
               <li key={store.id}>
                 <Link
                   href={`/unidades/${store.slug}`}
-                  className="hover:text-pine"
+                  className="inline-block py-0.5 leading-relaxed hover:text-pine"
                 >
                   {store.name} — {store.neighborhood}
                 </Link>
@@ -122,7 +118,7 @@ export async function SiteFooter() {
               <li key={store.id}>
                 <DemoWhatsAppLink
                   href={`https://wa.me/${store.whatsapp}`}
-                  className="inline-flex items-center gap-2 hover:text-pine"
+                  className="inline-flex min-h-10 items-center gap-2 rounded-full border border-ink/10 bg-cream-soft/50 px-4 py-2 hover:bg-blush-light hover:text-pine"
                 >
                   <MessageCircle size={16} /> WhatsApp — {store.name}
                 </DemoWhatsAppLink>
@@ -130,7 +126,10 @@ export async function SiteFooter() {
             ))}
 
             <li>
-              <Link href="/contato" className="hover:text-pine">
+              <Link
+                href="/contato"
+                className="inline-flex min-h-9 items-center hover:text-pine"
+              >
                 Ver todos os contatos
               </Link>
             </li>
@@ -139,9 +138,9 @@ export async function SiteFooter() {
       </div>
 
       <div className="border-t border-ink/10">
-        <div className="section flex flex-col gap-2 py-6 text-xs text-ink-soft sm:flex-row sm:items-center sm:justify-between">
+        <div className="section flex flex-col gap-4 py-6 text-xs leading-relaxed text-ink-soft lg:flex-row lg:items-center lg:justify-between">
           {demoMode ? (
-            <p>
+            <p className="max-w-[62ch]">
               Demonstração independente de projeto — não é o site oficial da
               Caneli.
             </p>
@@ -152,7 +151,7 @@ export async function SiteFooter() {
             </p>
           )}
 
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
             <Link href="/privacidade" className="hover:text-pine">
               Política de privacidade
             </Link>

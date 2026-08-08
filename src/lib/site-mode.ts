@@ -14,12 +14,12 @@ const DEMO_INSTALLATION =
   process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
 
 export async function getFunctionalDemoMode(): Promise<boolean> {
-  noStore();
-
   // Instalação oficial: não existe limitação funcional de demonstração.
   if (!DEMO_INSTALLATION) {
     return false;
   }
+
+  noStore();
 
   try {
     const supabase = createClient();
@@ -35,20 +35,22 @@ export async function getFunctionalDemoMode(): Promise<boolean> {
       return true;
     }
 
-    // O campo é jsonb e pode armazenar diretamente true/false.
-    if (typeof data.value === "boolean") {
-      return data.value;
+    const value = data.value;
+
+    if (typeof value === "boolean") {
+      return value;
     }
 
-    // Compatibilidade caso algum dia seja salvo como { enabled: true }.
+    // Compatibilidade caso o valor seja salvo como { enabled: true }.
+    // O tipo precisa ser estritamente booleano para nunca liberar o modo real
+    // por causa de um JSON malformado.
     if (
-      data.value &&
-      typeof data.value === "object" &&
-      "enabled" in data.value
+      value &&
+      typeof value === "object" &&
+      "enabled" in value &&
+      typeof (value as { enabled?: unknown }).enabled === "boolean"
     ) {
-      return Boolean(
-        (data.value as { enabled?: boolean }).enabled
-      );
+      return (value as { enabled: boolean }).enabled;
     }
 
     return true;

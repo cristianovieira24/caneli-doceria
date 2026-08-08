@@ -3,16 +3,106 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --cream: 251 243 236;
+    --cream-soft: 255 251 247;
+    --cream-deep: 242 230 216;
+
+    --blush: 243 207 198;
+    --blush-light: 249 228 222;
+    --blush-dark: 232 175 161;
+
+    --pine: 51 71 58;
+    --pine-light: 76 99 83;
+    --pine-dark: 32 48 31;
+
+    --terracotta: 192 112 63;
+    --terracotta-light: 214 143 95;
+    --terracotta-dark: 156 87 48;
+
+    --ink: 43 36 32;
+    --ink-soft: 91 81 72;
+
+    --gold: 185 138 62;
+    --gold-light: 217 184 118;
+
+    --shadow-color: 43 36 32;
+    color-scheme: light;
+  }
+
+  html.dark {
+    --cream: 27 23 21;
+    --cream-soft: 37 31 28;
+    --cream-deep: 47 38 34;
+
+    --blush: 107 72 69;
+    --blush-light: 65 48 45;
+    --blush-dark: 154 101 91;
+
+    --pine: 164 195 169;
+    --pine-light: 190 215 194;
+    --pine-dark: 111 146 120;
+
+    --terracotta: 227 154 107;
+    --terracotta-light: 239 180 139;
+    --terracotta-dark: 187 115 75;
+
+    --ink: 245 237 231;
+    --ink-soft: 201 185 173;
+
+    --gold: 216 179 103;
+    --gold-light: 235 207 145;
+
+    --shadow-color: 0 0 0;
+    color-scheme: dark;
+  }
+
   html {
     scroll-behavior: smooth;
+    background: rgb(var(--cream));
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
-    @apply bg-cream text-ink font-body antialiased;
+    @apply min-h-screen bg-cream font-body text-ink antialiased;
+    min-width: 320px;
+    overflow-x: clip;
+    background-image:
+      radial-gradient(circle at 8% 7%, rgb(var(--blush) / 0.13) 0, rgb(var(--blush) / 0.13) 9rem, transparent 9.2rem),
+      radial-gradient(circle at 92% 28%, rgb(var(--gold) / 0.07) 0, rgb(var(--gold) / 0.07) 8rem, transparent 8.2rem);
+    transition: background-color 320ms ease, color 320ms ease;
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     @apply font-display text-ink;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button,
+  a {
+    touch-action: manipulation;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
   }
 
   ::selection {
@@ -20,19 +110,147 @@
   }
 
   :focus-visible {
-    outline: 2px solid theme("colors.pine.DEFAULT");
+    outline: 2px solid rgb(var(--pine));
     outline-offset: 3px;
-    border-radius: 4px;
+    border-radius: 6px;
+  }
+}
+
+@layer components {
+  .pastry-card {
+    border-radius: 28px 28px 54px 28px;
+    border: 1px solid rgb(var(--ink) / 0.055);
+  }
+
+  .pastry-card:hover {
+    border-color: rgb(var(--pine) / 0.14);
+  }
+
+  .pastry-surface {
+    background-image:
+      radial-gradient(circle at 14% 20%, rgb(var(--blush) / 0.22) 0 7rem, transparent 7.15rem),
+      radial-gradient(circle at 88% 76%, rgb(var(--gold) / 0.1) 0 6rem, transparent 6.15rem),
+      linear-gradient(135deg, rgb(var(--cream-soft) / 0.72), rgb(var(--cream) / 0.88));
+  }
+
+  .pastry-sprinkles {
+    background-image:
+      linear-gradient(32deg, transparent 47%, rgb(var(--terracotta) / 0.13) 48% 52%, transparent 53%),
+      linear-gradient(118deg, transparent 47%, rgb(var(--pine) / 0.09) 48% 52%, transparent 53%),
+      radial-gradient(circle, rgb(var(--gold) / 0.14) 0 1.5px, transparent 1.8px);
+    background-size: 48px 48px, 62px 62px, 36px 36px;
+  }
+
+  .frosting-panel {
+    position: relative;
+    border-radius: 32px 32px 84px 32px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .frosting-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 12% 22%, rgb(var(--blush-light) / 0.16) 0 5rem, transparent 5.2rem),
+      radial-gradient(circle at 86% 82%, rgb(var(--gold-light) / 0.11) 0 5.5rem, transparent 5.7rem);
+  }
+
+  .scallop-section {
+    position: relative;
+  }
+
+  .scallop-section::before,
+  .scallop-section::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 22px;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 11px 11px, rgb(var(--blush-light)) 10px, transparent 10.5px) 0 0 / 22px 22px repeat-x;
+  }
+
+  .scallop-section::before {
+    top: -11px;
+  }
+
+  .scallop-section::after {
+    bottom: -11px;
+    transform: rotate(180deg);
+  }
+
+  .footer-frosting {
+    position: relative;
+  }
+
+  .footer-frosting::before {
+    content: "";
+    position: absolute;
+    top: -12px;
+    left: 0;
+    right: 0;
+    height: 24px;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 12px 12px, rgb(var(--cream-deep)) 11px, transparent 11.5px) 0 0 / 24px 24px repeat-x;
+  }
+
+  .pastry-ring {
+    border: 10px solid rgb(var(--blush) / 0.55);
+    box-shadow:
+      inset 0 0 0 1px rgb(var(--cream-soft) / 0.3),
+      0 14px 36px -22px rgb(var(--shadow-color) / 0.4);
+  }
+
+  .macaron-stack {
+    position: relative;
+    width: 54px;
+    height: 34px;
+    border-radius: 999px;
+    background: rgb(var(--terracotta) / 0.78);
+    box-shadow:
+      inset 0 -7px 0 rgb(var(--cream-soft) / 0.36),
+      inset 0 7px 0 rgb(var(--terracotta-light) / 0.28);
+  }
+
+  .macaron-stack::before,
+  .macaron-stack::after {
+    content: "";
+    position: absolute;
+    width: 42px;
+    height: 26px;
+    border-radius: 999px;
+  }
+
+  .macaron-stack::before {
+    left: -21px;
+    top: 20px;
+    background: rgb(var(--blush-dark) / 0.78);
+    box-shadow: inset 0 -6px 0 rgb(var(--cream-soft) / 0.28);
+    transform: rotate(-14deg);
+  }
+
+  .macaron-stack::after {
+    right: -18px;
+    top: 24px;
+    background: rgb(var(--gold) / 0.72);
+    box-shadow: inset 0 -6px 0 rgb(var(--cream-soft) / 0.24);
+    transform: rotate(12deg);
   }
 }
 
 @layer utilities {
   .eyebrow {
-    @apply font-script text-2xl text-terracotta leading-none;
+    @apply font-script text-2xl leading-none text-terracotta;
   }
 
   .section {
-    @apply mx-auto max-w-content px-5 sm:px-8 lg:px-10;
+    @apply mx-auto w-full max-w-content px-4 sm:px-8 lg:px-10;
   }
 
   .arch-frame {
@@ -41,12 +259,68 @@
   }
 
   .input {
-    @apply w-full rounded-xl border border-ink/15 bg-cream-soft px-4 py-2.5 text-[15px] text-ink placeholder:text-ink-soft/50 focus:border-pine;
+    @apply w-full rounded-xl border border-ink/15 bg-cream-soft px-4 py-3 text-base text-ink placeholder:text-ink-soft/50 transition-colors focus:border-pine sm:py-2.5 sm:text-[15px];
+  }
+
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .safe-bottom {
+    padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@media (min-width: 380px) {
+  .section {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .pastry-card {
+    border-radius: 22px 22px 40px 22px;
+  }
+
+  .frosting-panel {
+    border-radius: 26px 26px 58px 26px;
+  }
+
+  .scallop-section::before,
+  .scallop-section::after {
+    height: 18px;
+    background-size: 18px 18px;
+    background-image:
+      radial-gradient(circle at 9px 9px, rgb(var(--blush-light)) 8px, transparent 8.5px);
+  }
+
+  .scallop-section::before {
+    top: -9px;
+  }
+
+  .scallop-section::after {
+    bottom: -9px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
