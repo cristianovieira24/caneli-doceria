@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
-
-const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
+import { getFunctionalDemoMode } from "@/lib/site-mode";
 
 export const metadata: Metadata = {
   title: "Política de privacidade",
   robots: { index: false, follow: true },
 };
 
-export default function PrivacidadePage() {
+export default async function PrivacidadePage() {
+  const demoMode = await getFunctionalDemoMode();
+
   return (
     <div className="section max-w-[70ch] py-12">
       <h1 className="text-3xl">Política de privacidade</h1>
 
       <div className="mt-6 space-y-4 leading-relaxed text-ink-soft">
-        {DEMO_MODE ? (
+        {demoMode ? (
           <>
             <p>
               Este site está em modo demonstração e não representa o site
@@ -28,9 +29,8 @@ export default function PrivacidadePage() {
             </p>
 
             <p>
-              Ferramentas de análise e rastreamento, como Google Analytics e
-              Google Tag Manager, permanecem desativadas enquanto o site estiver
-              em modo demonstração.
+              Ferramentas de análise e rastreamento permanecem desativadas
+              enquanto esta instalação estiver protegida como demonstração.
             </p>
 
             <p className="rounded-card border border-dashed border-ink/15 bg-cream-soft/60 px-5 py-4 text-sm">
@@ -43,17 +43,15 @@ export default function PrivacidadePage() {
         ) : (
           <>
             <p>
-              Este site usa cookies de análise, como Google Analytics e Google
-              Tag Manager, apenas depois que você aceita o aviso de cookies
-              exibido na primeira visita. Você pode recusar a qualquer momento;
-              isso não afeta o uso do cardápio, do formulário de encomendas ou
-              do pedido pelo WhatsApp.
+              Dados enviados pelo formulário de encomendas, como nome,
+              WhatsApp, tipo de pedido e detalhes, são usados para tratar aquela
+              solicitação.
             </p>
 
             <p>
-              Dados enviados pelo formulário de encomendas, como nome,
-              WhatsApp, tipo de pedido e detalhes, são usados exclusivamente
-              pela equipe da Caneli para tratar aquela solicitação.
+              Nesta instalação de apresentação, ferramentas de análise e
+              rastreamento permanecem desativadas enquanto a proteção fixa de
+              demonstração estiver ativa.
             </p>
 
             <p className="rounded-card border border-dashed border-ink/15 bg-cream-soft/60 px-5 py-4 text-sm">
