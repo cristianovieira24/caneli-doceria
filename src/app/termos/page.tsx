@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
-
-const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
+import { getFunctionalDemoMode } from "@/lib/site-mode";
 
 export const metadata: Metadata = {
   title: "Termos de uso",
   robots: { index: false, follow: true },
 };
 
-export default function TermosPage() {
+export default async function TermosPage() {
+  const demoMode = await getFunctionalDemoMode();
+
   return (
     <div className="section max-w-[70ch] py-12">
       <h1 className="text-3xl">Termos de uso</h1>
 
       <div className="mt-6 space-y-4 leading-relaxed text-ink-soft">
-        {DEMO_MODE ? (
+        {demoMode ? (
           <>
             <p>
               Este site é uma demonstração independente de projeto digital e
