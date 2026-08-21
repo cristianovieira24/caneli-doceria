@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Minus, Plus } from "lucide-react";
 import { useCartStore } from "@/lib/store/cart-store";
 import { formatBRL } from "@/lib/format";
+import { resolveProductForStore } from "@/lib/product-for-store";
 import { track } from "@/lib/analytics";
 import type { Product } from "@/types/database";
 
@@ -18,6 +19,7 @@ export function AddToCartForm({ product }: { product: Product }) {
   const [note, setNote] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
+  const resolved = resolveProductForStore(product, storeId);
 
   const variant = product.variants?.find((v) => v.id === variantId);
   const selectedAddons = useMemo(
@@ -26,11 +28,16 @@ export function AddToCartForm({ product }: { product: Product }) {
   );
 
   const unitPrice = useMemo(() => {
-    const base = product.promo_price ?? product.price;
+    const base = resolved.product.promo_price ?? resolved.product.price;
     const variantDelta = variant?.price_delta ?? 0;
     const addonsTotal = selectedAddons.reduce((sum, a) => sum + a.price, 0);
     return base + variantDelta + addonsTotal;
-  }, [product, variant, selectedAddons]);
+  }, [
+    resolved.product.promo_price,
+    resolved.product.price,
+    variant,
+    selectedAddons,
+  ]);
 
   function toggleAddon(id: string) {
     setAddonIds((prev) =>
@@ -71,6 +78,23 @@ export function AddToCartForm({ product }: { product: Product }) {
           cardápio
         </button>{" "}
         antes de adicionar itens ao pedido.
+      </div>
+    );
+  }
+
+  if (resolved.availability === "unavailable") {
+    return (
+      <div className="rounded-pastry bg-blush-light px-4 py-3 text-sm leading-relaxed text-ink-soft">
+        Este produto não está disponível na unidade escolhida. Você pode voltar
+        ao{" "}
+        <button
+          type="button"
+          onClick={() => router.push("/cardapio")}
+          className="text-pine underline underline-offset-4"
+        >
+          cardápio
+        </button>{" "}
+        e selecionar outra unidade.
       </div>
     );
   }

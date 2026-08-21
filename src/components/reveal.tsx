@@ -20,7 +20,10 @@ export function Reveal({
   scale?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+  // O conteúdo começa visível para não deixar áreas em branco durante a
+  // hidratação. Apenas elementos realmente abaixo da dobra são preparados
+  // para a animação de entrada.
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const node = ref.current;
@@ -35,6 +38,14 @@ export function Reveal({
       return;
     }
 
+    const bounds = node.getBoundingClientRect();
+    const isAlreadyOnScreen =
+      bounds.top < window.innerHeight * 0.98 && bounds.bottom > 0;
+
+    if (isAlreadyOnScreen) return;
+
+    setVisible(false);
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -43,8 +54,8 @@ export function Reveal({
         }
       },
       {
-        threshold: 0.1,
-        rootMargin: "0px 0px -6% 0px",
+        threshold: 0.05,
+        rootMargin: "0px 0px -2% 0px",
       }
     );
 
@@ -77,7 +88,7 @@ export function Reveal({
           ? "translate3d(0, 0, 0) scale(1)"
           : `${translate} scale(${scale})`,
         transitionProperty: "opacity, transform",
-        transitionDuration: "780ms",
+        transitionDuration: "560ms",
         transitionDelay: visible ? `${delay}ms` : "0ms",
         transitionTimingFunction: "cubic-bezier(.22, 1, .36, 1)",
         willChange: visible ? "auto" : "opacity, transform",

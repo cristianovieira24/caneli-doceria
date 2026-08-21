@@ -23,6 +23,9 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const cartCount = useCartCount();
   const openDrawer = useCartStore((s) => s.openDrawer);
+  const primaryCta = pathname?.startsWith("/cardapio")
+    ? { href: "/encomendas", label: "Fazer encomenda" }
+    : { href: "/cardapio", label: "Ver cardápio" };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -83,10 +86,10 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-2 lg:flex">
           <Link
-            href="/cardapio"
+            href={primaryCta.href}
             className="rounded-full bg-pine px-5 py-2.5 text-sm font-medium text-cream-soft transition-all duration-300 hover:-translate-y-0.5 hover:bg-pine-dark active:translate-y-0"
           >
-            Ver cardápio
+            {primaryCta.label}
           </Link>
 
           <ThemeToggle compact />
@@ -170,10 +173,10 @@ export function SiteHeader() {
             })}
 
             <Link
-              href="/cardapio"
+              href={primaryCta.href}
               className="mt-4 rounded-full bg-pine px-5 py-3.5 text-center text-sm font-medium text-cream-soft"
             >
-              Ver cardápio
+              {primaryCta.label}
             </Link>
           </div>
         </nav>
