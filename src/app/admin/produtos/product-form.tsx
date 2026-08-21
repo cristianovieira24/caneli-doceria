@@ -80,7 +80,7 @@ export function ProductForm({ categories, product }: { categories: Category[]; p
           <input name="price" type="number" step="0.01" min="0" defaultValue={product?.price ?? ""} required className="input" />
         </Field>
         <Field label="Preço promocional (opcional)" name="promo_price">
-          <input name="promo_price" type="number" step="0.01" min="0" defaultValue={product?.promo_price ?? ""} className="input" />
+          <input name="promo_price" type="number" step="0.01" min="0.01" defaultValue={product?.promo_price || ""} className="input" />
         </Field>
       </div>
 
