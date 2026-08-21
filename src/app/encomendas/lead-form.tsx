@@ -33,6 +33,20 @@ export function LeadForm() {
       action={formAction}
       className="pastry-card mt-8 grid gap-5 bg-cream-soft/75 p-4 shadow-soft sm:grid-cols-2 sm:p-6 lg:p-7"
     >
+      <div
+        aria-hidden="true"
+        className="absolute -left-[10000px] h-px w-px overflow-hidden"
+      >
+        <label htmlFor="companyWebsite">Site da empresa</label>
+        <input
+          id="companyWebsite"
+          name="companyWebsite"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
+
       {demoMode && (
         <div className="rounded-xl border border-dashed border-pine/20 bg-pine/5 px-4 py-4 text-sm leading-relaxed text-ink-soft sm:col-span-2 sm:px-5">
           <strong className="text-pine">Modo demonstração:</strong>{" "}

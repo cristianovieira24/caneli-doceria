@@ -26,7 +26,13 @@ export async function GET() {
   }
 
   const supabase = createClient();
-  const { data } = await supabase.from("products").select("*, category:categories(slug)").order("display_order");
+  const { data, error } = await supabase
+    .from("products")
+    .select("*, category:categories(slug)")
+    .order("display_order");
+  if (error) {
+    return NextResponse.json({ error: "Não foi possível exportar os produtos." }, { status: 500 });
+  }
 
   const rows = (data ?? []).map((p: any) => ({ ...p, category_slug: p.category?.slug ?? "" }));
   const csv = toCSV(rows, COLUMNS);

@@ -100,8 +100,8 @@ export function StoreForm({ store }: { store?: Store }) {
       </div>
 
       <p className="text-xs text-ink-soft">
-        Horário de funcionamento por dia da semana chega numa próxima etapa do painel — por
-        enquanto, edite <code>store_hours</code> direto no Supabase se precisar.
+        Depois de salvar, abra novamente esta unidade para editar o horário de
+        funcionamento de cada dia da semana.
       </p>
 
       {state.error && <p className="text-sm text-terracotta">{state.error}</p>}

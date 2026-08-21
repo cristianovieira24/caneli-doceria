@@ -3,9 +3,13 @@ import { Plus, Pencil, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { deleteStore } from "./actions";
 import type { Store } from "@/types/database";
+import { getCurrentStaff, hasAtLeast } from "@/lib/auth";
+import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
 
 export default async function AdminUnidadesPage() {
   const supabase = createClient();
+  const staff = await getCurrentStaff();
+  const canDelete = !!staff && hasAtLeast(staff.roles, "administrador");
   const { data } = await supabase.from("stores").select("*").order("display_order");
   const stores = (data as Store[]) ?? [];
 
@@ -46,11 +50,17 @@ export default async function AdminUnidadesPage() {
                     <Link href={`/admin/unidades/${s.id}`} aria-label="Editar" className="text-ink-soft hover:text-pine">
                       <Pencil size={16} />
                     </Link>
-                    <form action={deleteStore.bind(null, s.id)}>
-                      <button type="submit" aria-label="Excluir" className="text-ink-soft hover:text-terracotta">
-                        <Trash2 size={16} />
-                      </button>
-                    </form>
+                    {canDelete && (
+                      <form action={deleteStore.bind(null, s.id)}>
+                        <ConfirmSubmitButton
+                          label={`Excluir ${s.name}`}
+                          confirmation={`Excluir a unidade “${s.name}”? Produtos, horários e vínculos relacionados podem ser afetados.`}
+                          className="text-ink-soft hover:text-terracotta"
+                        >
+                          <Trash2 size={16} />
+                        </ConfirmSubmitButton>
+                      </form>
+                    )}
                   </div>
                 </td>
               </tr>

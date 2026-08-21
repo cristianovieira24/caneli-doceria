@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentStaff, hasAtLeast } from "@/lib/auth";
+import { removeManagedMedia } from "@/lib/media";
 
 const categorySchema = z.object({
   name: z.string().min(2, "Informe o nome"),
@@ -23,6 +24,13 @@ async function requireEditor() {
   if (!staff || !hasAtLeast(staff.roles, "editor")) throw new Error("Sem permissão.");
 }
 
+async function requireAdmin() {
+  const staff = await getCurrentStaff();
+  if (!staff || !hasAtLeast(staff.roles, "administrador")) {
+    throw new Error("Só administradores podem excluir categorias.");
+  }
+}
+
 export async function saveCategory(
   categoryId: string | null,
   _prev: CategoryFormState,
@@ -39,6 +47,16 @@ export async function saveCategory(
   const { visible, ...rest } = parsed.data;
   const payload = { ...rest, visible: visible === "on" };
   const supabase = createClient();
+  let previousImageUrl: string | null = null;
+
+  if (categoryId) {
+    const { data } = await supabase
+      .from("categories")
+      .select("image_url")
+      .eq("id", categoryId)
+      .single();
+    previousImageUrl = data?.image_url ?? null;
+  }
 
   const result = categoryId
     ? await supabase.from("categories").update(payload).eq("id", categoryId)
@@ -46,14 +64,32 @@ export async function saveCategory(
 
   if (result.error) return { error: "Não foi possível salvar. " + result.error.message };
 
+  if (previousImageUrl && previousImageUrl !== payload.image_url) {
+    await removeManagedMedia(supabase, [previousImageUrl]);
+  }
+
   revalidatePath("/admin/categorias");
   revalidatePath("/cardapio");
   redirect("/admin/categorias");
 }
 
 export async function deleteCategory(id: string) {
-  await requireEditor();
+  await requireAdmin();
   const supabase = createClient();
-  await supabase.from("categories").delete().eq("id", id);
+
+  const { data: category } = await supabase
+    .from("categories")
+    .select("image_url")
+    .eq("id", id)
+    .single();
+  const { error } = await supabase.from("categories").delete().eq("id", id);
+  if (error) {
+    throw new Error(
+      "Não foi possível excluir a categoria. Remova ou mova os produtos vinculados antes."
+    );
+  }
+
+  await removeManagedMedia(supabase, [category?.image_url]);
   revalidatePath("/admin/categorias");
+  revalidatePath("/cardapio");
 }

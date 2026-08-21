@@ -1,9 +1,9 @@
 # Caneli Doceria — website
 
-Site institucional + cardápio + pedidos por WhatsApp + (em breve) painel
+Site institucional + cardápio + pedidos por WhatsApp + painel
 administrativo, para a Caneli Doceria (Goiânia).
 
-## Status deste pacote — Fase 1 de 4
+## Status deste pacote
 
 Este projeto está sendo construído em fases, combinadas com você no chat.
 **Esta entrega é a Fase 1**: fundação técnica + design system + páginas
@@ -52,12 +52,9 @@ Peça para eu continuar quando quiser seguir para a próxima fase.
   slug existente atualizam o produto, as novas são criadas; erros por
   linha aparecem num relatório, nada é importado sem passar pela
   validação.
-- **Usuários**: só o proprietário vê a tela `/admin/usuarios`. Para dar
-  acesso a alguém nesse ambiente sem Supabase configurado, ela precisa
-  primeiro existir como conta no Supabase Auth (crie em
-  *Authentication → Users*, ou peça pra ela tentar "Esqueci minha senha"
-  em `/admin/esqueci-senha`) — só depois o proprietário consegue
-  atribuir o papel pelo e-mail.
+- **Usuários**: só o proprietário vê a tela `/admin/usuarios`. Ao atribuir
+  um papel para um e-mail que ainda não existe no Supabase Auth, o painel
+  cria a conta e envia automaticamente o convite para definir a senha.
 - A gestão de usuários usa a `SUPABASE_SERVICE_ROLE_KEY` — preencha essa
   variável no `.env.local` (nunca no navegador) para essa tela funcionar.
 
@@ -81,8 +78,8 @@ Tudo que foi combinado nas 4 fases está entregue. Se quiser continuar
 depois, isto ainda não foi feito (nenhum é bloqueante para publicar):
 - Reordenar categorias arrastando com o mouse (hoje é um número digitado)
 - Preview de produto/campanha antes de publicar
-- Editor visual para os textos institucionais (hero da home, texto do
-  rodapé) — hoje ficam na tabela `content_sections`, editável só via SQL
+- Ampliar o editor de conteúdo para textos além do hero da home e da seção
+  principal da página Sobre
 - Testes automatizados (o projeto foi validado com `typecheck` e `lint`,
   não há testes end-to-end)
 
@@ -140,7 +137,8 @@ npm run dev
 
 1. Crie um projeto em [supabase.com](https://supabase.com).
 2. Em **SQL Editor**, rode as migrations em ordem, de
-   `supabase/migrations/001_extensions.sql` até `008_storage.sql`.
+   `supabase/migrations/001_extensions.sql` até
+   `009_integrity_and_security.sql`.
 3. Rode `supabase/seed/seed.sql` para carregar os dados reais iniciais.
 4. Em **Authentication → Users**, crie o primeiro usuário (você) e depois
    rode:
@@ -148,7 +146,8 @@ npm run dev
    insert into user_roles (user_id, role)
    values ('<uuid-do-usuário>', 'proprietario');
    ```
-   (o painel `/admin` para fazer isso pela interface chega na Fase 3).
+   Depois desse primeiro acesso, novos usuários podem ser convidados pelo
+   próprio painel em `/admin/usuarios`.
 5. Copie a **Project URL** e a **anon public key** em
    *Settings → API* para o seu `.env.local`.
 

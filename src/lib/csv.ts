@@ -46,7 +46,10 @@ export function parseCSV(text: string): Record<string, string>[] {
 
 export function toCSV(rows: Record<string, unknown>[], columns: string[]): string {
   const escape = (v: unknown) => {
-    const s = String(v ?? "");
+    let s = String(v ?? "");
+    // Spreadsheet applications may execute cells beginning with these
+    // characters as formulas. Prefix user-controlled values before export.
+    if (/^[=+\-@]/.test(s)) s = `'${s}`;
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
   return [columns.join(","), ...rows.map((r) => columns.map((c) => escape(r[c])).join(","))].join("\n");

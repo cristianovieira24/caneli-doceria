@@ -5,14 +5,32 @@ import { createClient } from "@/lib/supabase/server";
 import { getFunctionalDemoMode } from "@/lib/site-mode";
 
 const leadSchema = z.object({
-  name: z.string().min(2, "Informe seu nome"),
-  whatsapp: z.string().min(10, "Informe um WhatsApp válido"),
-  orderType: z.string().min(1, "Escolha o tipo de encomenda"),
-  preferredStoreId: z.string().optional(),
-  desiredDate: z.string().optional(),
-  peopleCount: z.string().optional(),
-  budgetHint: z.string().optional(),
-  description: z.string().min(10, "Conte um pouco mais sobre a encomenda"),
+  name: z.string().trim().min(2, "Informe seu nome").max(120, "Nome muito longo"),
+  whatsapp: z.string().refine((value) => {
+    const digits = value.replace(/\D/g, "");
+    return digits.length >= 10 && digits.length <= 15;
+  }, "Informe um WhatsApp válido"),
+  orderType: z.string().min(1, "Escolha o tipo de encomenda").max(80),
+  preferredStoreId: z.union([z.string().uuid(), z.literal("")]).optional(),
+  desiredDate: z
+    .string()
+    .refine((value) => !value || /^\d{4}-\d{2}-\d{2}$/.test(value), "Data inválida")
+    .optional(),
+  peopleCount: z
+    .string()
+    .refine(
+      (value) =>
+        !value ||
+        (/^\d+$/.test(value) && Number(value) >= 1 && Number(value) <= 10000),
+      "Informe uma quantidade válida"
+    )
+    .optional(),
+  budgetHint: z.string().max(120, "Orçamento muito longo").optional(),
+  description: z
+    .string()
+    .trim()
+    .min(10, "Conte um pouco mais sobre a encomenda")
+    .max(4000, "Descrição muito longa"),
   consent: z.literal("on", {
     errorMap: () => ({ message: "Confirme o consentimento" }),
   }),
@@ -29,6 +47,16 @@ export async function submitLead(
   formData: FormData
 ): Promise<LeadFormState> {
   const raw = Object.fromEntries(formData.entries());
+
+  // Honeypot: this field is visually hidden and must stay empty. Returning a
+  // generic success avoids teaching automated bots how the filter works.
+  if (String(formData.get("companyWebsite") || "").trim()) {
+    return {
+      status: "success",
+      message: "Recebemos seu pedido! A equipe entra em contato para confirmar.",
+    };
+  }
+
   const parsed = leadSchema.safeParse(raw);
 
   if (!parsed.success) {
@@ -60,7 +88,7 @@ export async function submitLead(
 
   const { error } = await supabase.from("leads").insert({
     name: parsed.data.name,
-    whatsapp: parsed.data.whatsapp,
+    whatsapp: parsed.data.whatsapp.replace(/\D/g, ""),
     order_type: parsed.data.orderType,
     preferred_store_id: parsed.data.preferredStoreId || null,
     desired_date: parsed.data.desiredDate || null,

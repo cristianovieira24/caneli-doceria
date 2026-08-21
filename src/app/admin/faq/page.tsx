@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { addFaqItem, deleteFaqItem, toggleFaqVisible } from "./actions";
 import type { FaqItem } from "@/types/database";
 import { Trash2 } from "lucide-react";
+import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
 
 export default async function AdminFaqPage() {
   const supabase = createClient();
@@ -41,9 +42,13 @@ export default async function AdminFaqPage() {
                 </button>
               </form>
               <form action={deleteFaqItem.bind(null, item.id)}>
-                <button type="submit" aria-label="Excluir" className="text-ink-soft hover:text-terracotta">
+                <ConfirmSubmitButton
+                  label={`Excluir ${item.question}`}
+                  confirmation={`Excluir a pergunta “${item.question}”?`}
+                  className="text-ink-soft hover:text-terracotta"
+                >
                   <Trash2 size={16} />
-                </button>
+                </ConfirmSubmitButton>
               </form>
             </div>
           </div>
