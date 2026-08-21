@@ -4,10 +4,10 @@ import { notFound } from "next/navigation";
 import { AddToCartForm } from "@/components/add-to-cart-form";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { JsonLd } from "@/components/json-ld";
+import { ProductDetailPrice } from "@/components/product-detail-price";
 import { Reveal } from "@/components/reveal";
 import { ViewTracker } from "@/components/view-tracker";
 import { createClient } from "@/lib/supabase/server";
-import { formatBRL } from "@/lib/format";
 import type { Product } from "@/types/database";
 
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
@@ -18,7 +18,7 @@ async function getProduct(slug: string): Promise<Product | null> {
   const { data } = await supabase
     .from("products")
     .select(
-      "*, images:product_images(*), variants:product_variants(*), addons:product_addons(*), tags:product_tags(tag:tags(*))"
+      "*, category:categories(id, slug, name, image_url), images:product_images(*), variants:product_variants(*), addons:product_addons(*), tags:product_tags(tag:tags(*)), store_products(*)"
     )
     .eq("slug", slug)
     .eq("status", "published")
@@ -49,6 +49,7 @@ export async function generateMetadata({
 
     const image =
       product.images?.find((i) => i.is_primary) ?? product.images?.[0];
+    const imageUrl = image?.url ?? product.category?.image_url;
 
     return {
       title: product.seo_title || product.name,
@@ -65,7 +66,7 @@ export async function generateMetadata({
           product.seo_description ||
           product.short_description ||
           undefined,
-        images: image ? [{ url: image.url }] : undefined,
+        images: imageUrl ? [{ url: imageUrl }] : undefined,
       },
     };
   } catch {
@@ -88,7 +89,10 @@ export default async function ProductPage({
 
   if (!product) notFound();
 
-  const images = product.images?.length ? product.images : [];
+  const primaryImage =
+    product.images?.find((image) => image.is_primary) ?? product.images?.[0];
+  const categoryImage = !primaryImage ? product.category?.image_url : null;
+  const structuredImage = primaryImage?.url ?? categoryImage ?? undefined;
 
   const SITE_URL =
     process.env.NEXT_PUBLIC_SITE_URL ||
@@ -111,7 +115,7 @@ export default async function ProductPage({
               product.short_description ||
               product.full_description ||
               undefined,
-            image: images[0]?.url,
+            image: structuredImage,
             url: `${SITE_URL}/cardapio/${product.slug}`,
             offers: {
               "@type": "Offer",
@@ -138,17 +142,33 @@ export default async function ProductPage({
       <div className="grid min-w-0 gap-8 lg:grid-cols-2 lg:gap-12">
         <Reveal direction="right" scale={0.98}>
           <div className="relative mx-auto aspect-[4/5] w-full max-w-xl overflow-hidden rounded-[42%_42%_32px_32px] bg-blush-light shadow-lift lg:max-w-none">
-            {images[0] ? (
+            {primaryImage ? (
               <Image
-                src={images[0].url}
-                alt={images[0].alt || product.name}
+                src={primaryImage.url}
+                alt={primaryImage.alt || product.name}
                 fill
                 sizes="(min-width: 1024px) 50vw, 100vw"
                 className="object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.025]"
               />
+            ) : categoryImage ? (
+              <>
+                <Image
+                  src={categoryImage}
+                  alt={`Imagem ilustrativa da categoria ${product.category?.name ?? "do produto"}`}
+                  fill
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.025]"
+                />
+                <span className="absolute bottom-4 left-4 rounded-full bg-ink/65 px-3 py-1.5 text-xs font-medium text-cream-soft backdrop-blur-sm">
+                  Imagem ilustrativa da categoria
+                </span>
+              </>
             ) : (
-              <div className="pastry-surface flex h-full items-center justify-center text-sm text-ink-soft/60">
-                Foto em breve
+              <div className="pastry-surface flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
+                <span className="font-script text-4xl text-pine/75">caneli</span>
+                <span className="text-sm text-ink-soft/60">
+                  Foto deste produto em breve
+                </span>
               </div>
             )}
           </div>
@@ -174,10 +194,7 @@ export default async function ProductPage({
               <p className="text-sm text-ink-soft">{product.yield_info}</p>
             )}
 
-            <p className="mt-5 text-xl font-semibold text-ink">
-              {product.price_prefix === "a partir de" && "a partir de "}
-              {formatBRL(product.promo_price ?? product.price)}
-            </p>
+            <ProductDetailPrice product={product} />
 
             {product.full_description && (
               <p className="mt-4 max-w-[55ch] leading-relaxed text-ink-soft">

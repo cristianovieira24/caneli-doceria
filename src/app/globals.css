@@ -211,6 +211,11 @@
     flex: 0 0 auto;
     background: rgb(var(--terracotta) / 0.72);
   }
+
+  html.dark .pastry-card,
+  html.dark .display-case-section {
+    border-color: rgb(var(--ink) / 0.1);
+  }
 }
 
 @layer utilities {
@@ -229,6 +234,20 @@
 
   .input {
     @apply w-full rounded-xl border border-ink/15 bg-cream-soft px-4 py-3 text-base text-ink placeholder:text-ink-soft/50 transition-colors focus:border-pine sm:py-2.5 sm:text-[15px];
+  }
+
+  html.dark .input {
+    border-color: rgb(var(--ink) / 0.24);
+    background-color: rgb(var(--cream-soft) / 0.98);
+  }
+
+  html.dark .input:hover {
+    border-color: rgb(var(--ink) / 0.34);
+  }
+
+  html.dark .input:focus {
+    border-color: rgb(var(--pine) / 0.82);
+    box-shadow: 0 0 0 3px rgb(var(--pine) / 0.1);
   }
 
   .scrollbar-hide {

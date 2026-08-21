@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { StoreSelector } from "@/components/store-selector";
+import { resolveProductForStore } from "@/lib/product-for-store";
 import { useCartStore } from "@/lib/store/cart-store";
 import type { Category, Product, Store, Tag } from "@/types/database";
 
@@ -14,15 +15,21 @@ export function MenuExplorer({
   categories,
   products,
   tags,
+  initialCategorySlug,
 }: {
   stores: Store[];
   categories: Category[];
   products: Product[];
   tags: Tag[];
+  initialCategorySlug?: string;
 }) {
   const storeId = useCartStore((s) => s.storeId);
   const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState<string | "all">("all");
+  const [activeCategory, setActiveCategory] = useState<string | "all">(
+    () =>
+      categories.find((category) => category.slug === initialCategorySlug)?.id ??
+      "all"
+  );
   const [activeTags, setActiveTags] = useState<string[]>([]);
 
   const dietTags = tags.filter((t) => DIET_TAGS.includes(t.slug));
@@ -52,17 +59,6 @@ export function MenuExplorer({
     });
   }, [products, search, activeCategory, activeTags]);
 
-  function availabilityFor(
-    product: Product
-  ): "available" | "unavailable" | "unknown" {
-    if (!storeId) return "unknown";
-
-    const link = product.store_products?.find((sp) => sp.store_id === storeId);
-    if (!link || link.hidden) return "unavailable";
-
-    return link.available ? "available" : "unavailable";
-  }
-
   return (
     <div className="min-w-0">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
@@ -86,8 +82,8 @@ export function MenuExplorer({
 
       {!storeId && (
         <p className="mt-4 rounded-pastry bg-blush-light px-4 py-3 text-sm leading-relaxed text-ink-soft">
-          Escolha sua unidade acima para ver preço e disponibilidade exatos —
-          eles podem variar entre as lojas.
+          Os valores exibidos são de referência. Escolha uma unidade para
+          confirmar preços e disponibilidade.
         </p>
       )}
 
@@ -137,13 +133,17 @@ export function MenuExplorer({
 
       {filtered.length > 0 ? (
         <div className="mt-8 grid grid-cols-1 gap-4 min-[380px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 lg:gap-5">
-          {filtered.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              availability={availabilityFor(product)}
-            />
-          ))}
+          {filtered.map((product) => {
+            const resolved = resolveProductForStore(product, storeId);
+
+            return (
+              <ProductCard
+                key={product.id}
+                product={resolved.product}
+                availability={resolved.availability}
+              />
+            );
+          })}
         </div>
       ) : (
         <div className="mt-10 rounded-pastry border border-dashed border-ink/15 bg-cream-soft/60 px-6 py-10 text-center text-sm text-ink-soft">

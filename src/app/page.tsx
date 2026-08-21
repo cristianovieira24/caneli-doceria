@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Hero, type HeroContent } from "@/components/hero";
 import { CampaignBanner } from "@/components/campaign-banner";
 import { ProductCard } from "@/components/product-card";
-import { CategoryCard } from "@/components/category-card";
+import { CategoryCarousel } from "@/components/category-carousel";
 import { StoreCard } from "@/components/store-card";
 import { JsonLd } from "@/components/json-ld";
 import { Reveal } from "@/components/reveal";
@@ -23,7 +23,9 @@ async function getHomeData() {
   ] = await Promise.all([
     supabase
       .from("products")
-      .select("*, images:product_images(*)")
+      .select(
+        "*, category:categories(id, slug, name, image_url), images:product_images(*), store_products(*)"
+      )
       .eq("status", "published")
       .eq("featured", true)
       .order("display_order")
@@ -167,19 +169,7 @@ export default async function HomePage() {
           </Reveal>
 
           {categories.length > 0 ? (
-            <div className="scrollbar-hide mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 sm:gap-5">
-              {categories.map((category, i) => (
-                <Reveal
-                  key={category.id}
-                  delay={Math.min(i * 45, 220)}
-                  className="shrink-0 snap-start"
-                  direction="left"
-                  distance={18}
-                >
-                  <CategoryCard category={category} />
-                </Reveal>
-              ))}
-            </div>
+            <CategoryCarousel categories={categories} />
           ) : (
             <EmptyState message="As categorias do cardápio aparecem aqui assim que forem cadastradas no painel." />
           )}

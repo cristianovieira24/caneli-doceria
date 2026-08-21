@@ -33,7 +33,7 @@ async function getMenu() {
     supabase
       .from("products")
       .select(
-        "*, images:product_images(*), tags:product_tags(tag:tags(*)), store_products(*)"
+        "*, category:categories(id, slug, name, image_url), images:product_images(*), tags:product_tags(tag:tags(*)), store_products(*)"
       )
       .eq("status", "published")
       .order("display_order"),
@@ -56,7 +56,11 @@ async function getMenu() {
   };
 }
 
-export default async function CardapioPage() {
+export default async function CardapioPage({
+  searchParams,
+}: {
+  searchParams?: { categoria?: string };
+}) {
   let stores: Store[] = [];
   let categories: Category[] = [];
   let tags: Tag[] = [];
@@ -81,8 +85,9 @@ export default async function CardapioPage() {
           Croissants, tortas, cafés & doces
         </h1>
         <p className="mt-3 max-w-[60ch] text-sm leading-relaxed text-ink-soft sm:text-base">
-          Escolha a unidade mais perto de você para ver preço e disponibilidade
-          exatos — o cardápio pode variar entre as lojas.
+          Os valores exibidos são de referência. Escolha uma unidade para
+          confirmar preços e disponibilidade — o cardápio pode variar entre as
+          lojas.
         </p>
       </Reveal>
 
@@ -93,6 +98,7 @@ export default async function CardapioPage() {
             categories={categories}
             products={products}
             tags={tags}
+            initialCategorySlug={searchParams?.categoria}
           />
         </div>
       </Reveal>

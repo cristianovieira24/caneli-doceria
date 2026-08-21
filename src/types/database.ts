@@ -113,6 +113,7 @@ export interface Product {
   seo_title: string | null;
   seo_description: string | null;
   tags?: Tag[];
+  category?: Pick<Category, "id" | "slug" | "name" | "image_url"> | null;
   images?: ProductImage[];
   variants?: ProductVariant[];
   addons?: ProductAddon[];
