@@ -7,7 +7,11 @@ import type { Campaign } from "@/types/database";
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
 
 export function CampaignBanner({ campaign }: { campaign: Campaign }) {
-  const isExternalLink = campaign.button_link?.startsWith("http");
+  const buttonLink = campaign.button_link ?? "";
+  const isExternalLink = /^https?:\/\//i.test(buttonLink);
+  const isInternalLink =
+    buttonLink.startsWith("/") && !buttonLink.startsWith("//");
+  const hasSafeLink = isExternalLink || isInternalLink;
 
   return (
     <section className="section pb-5 sm:pb-7">
@@ -38,7 +42,7 @@ export function CampaignBanner({ campaign }: { campaign: Campaign }) {
             {campaign.title}
           </h2>
 
-          {campaign.button_label && campaign.button_link && (
+          {campaign.button_label && campaign.button_link && hasSafeLink && (
             DEMO_MODE && isExternalLink ? (
               <DemoExternalLink
                 href={campaign.button_link}

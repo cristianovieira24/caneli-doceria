@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentStaff, hasAtLeast } from "@/lib/auth";
+import { removeManagedMedia } from "@/lib/media";
 
 const campaignSchema = z
   .object({
@@ -14,7 +15,16 @@ const campaignSchema = z
     image_desktop_url: z.string().url().optional().or(z.literal("")),
     image_mobile_url: z.string().url().optional().or(z.literal("")),
     button_label: z.string().optional(),
-    button_link: z.string().optional(),
+    button_link: z
+      .string()
+      .refine(
+        (value) =>
+          !value ||
+          (value.startsWith("/") && !value.startsWith("//")) ||
+          /^https?:\/\//i.test(value),
+        "Use uma rota interna começando com / ou uma URL http(s) completa"
+      )
+      .optional(),
     starts_at: z.string().min(1, "Informe a data de início"),
     ends_at: z.string().min(1, "Informe a data de término"),
     status: z.enum(["draft", "scheduled", "active", "ended"]),
@@ -32,6 +42,13 @@ async function requireEditor() {
   if (!staff || !hasAtLeast(staff.roles, "editor")) throw new Error("Sem permissão.");
 }
 
+async function requireAdmin() {
+  const staff = await getCurrentStaff();
+  if (!staff || !hasAtLeast(staff.roles, "administrador")) {
+    throw new Error("Só administradores podem excluir campanhas.");
+  }
+}
+
 export async function saveCampaign(
   campaignId: string | null,
   _prev: CampaignFormState,
@@ -46,6 +63,17 @@ export async function saveCampaign(
   }
 
   const supabase = createClient();
+  let previousImages: Array<string | null> = [];
+
+  if (campaignId) {
+    const { data } = await supabase
+      .from("campaigns")
+      .select("image_desktop_url, image_mobile_url")
+      .eq("id", campaignId)
+      .single();
+    previousImages = [data?.image_desktop_url ?? null, data?.image_mobile_url ?? null];
+  }
+
   const payload = {
     ...parsed.data,
     starts_at: new Date(parsed.data.starts_at).toISOString(),
@@ -58,14 +86,37 @@ export async function saveCampaign(
 
   if (result.error) return { error: "Não foi possível salvar. " + result.error.message };
 
+  await removeManagedMedia(
+    supabase,
+    previousImages.filter(
+      (url) =>
+        !!url &&
+        url !== payload.image_desktop_url &&
+        url !== payload.image_mobile_url
+    )
+  );
+
   revalidatePath("/admin/campanhas");
   revalidatePath("/");
   redirect("/admin/campanhas");
 }
 
 export async function deleteCampaign(id: string) {
-  await requireEditor();
+  await requireAdmin();
   const supabase = createClient();
-  await supabase.from("campaigns").delete().eq("id", id);
+
+  const { data: campaign } = await supabase
+    .from("campaigns")
+    .select("image_desktop_url, image_mobile_url")
+    .eq("id", id)
+    .single();
+  const { error } = await supabase.from("campaigns").delete().eq("id", id);
+  if (error) throw new Error("Não foi possível excluir a campanha. " + error.message);
+
+  await removeManagedMedia(supabase, [
+    campaign?.image_desktop_url,
+    campaign?.image_mobile_url,
+  ]);
   revalidatePath("/admin/campanhas");
+  revalidatePath("/");
 }

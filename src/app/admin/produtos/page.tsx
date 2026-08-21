@@ -3,6 +3,8 @@ import { Plus, Pencil, Copy, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { deleteProduct, duplicateProduct } from "./actions";
 import { formatBRL } from "@/lib/format";
+import { getCurrentStaff, hasAtLeast } from "@/lib/auth";
+import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
 import type { Category, Product } from "@/types/database";
 
 export default async function AdminProdutosPage({
@@ -11,6 +13,8 @@ export default async function AdminProdutosPage({
   searchParams: { status?: string; categoria?: string; q?: string };
 }) {
   const supabase = createClient();
+  const staff = await getCurrentStaff();
+  const canDelete = !!staff && hasAtLeast(staff.roles, "administrador");
 
   let query = supabase
     .from("products")
@@ -106,11 +110,17 @@ export default async function AdminProdutosPage({
                         <Copy size={16} />
                       </button>
                     </form>
-                    <form action={deleteProduct.bind(null, p.id)}>
-                      <button type="submit" aria-label="Excluir" className="text-ink-soft hover:text-terracotta">
-                        <Trash2 size={16} />
-                      </button>
-                    </form>
+                    {canDelete && (
+                      <form action={deleteProduct.bind(null, p.id)}>
+                        <ConfirmSubmitButton
+                          label={`Excluir ${p.name}`}
+                          confirmation={`Excluir “${p.name}”? Esta ação não pode ser desfeita.`}
+                          className="text-ink-soft hover:text-terracotta"
+                        >
+                          <Trash2 size={16} />
+                        </ConfirmSubmitButton>
+                      </form>
+                    )}
                   </div>
                 </td>
               </tr>

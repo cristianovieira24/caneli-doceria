@@ -3,9 +3,13 @@ import { Plus, Pencil, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { deleteCategory } from "./actions";
 import type { Category } from "@/types/database";
+import { getCurrentStaff, hasAtLeast } from "@/lib/auth";
+import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
 
 export default async function AdminCategoriasPage() {
   const supabase = createClient();
+  const staff = await getCurrentStaff();
+  const canDelete = !!staff && hasAtLeast(staff.roles, "administrador");
   const { data } = await supabase.from("categories").select("*").order("display_order");
   const categories = (data as Category[]) ?? [];
 
@@ -39,11 +43,17 @@ export default async function AdminCategoriasPage() {
                     <Link href={`/admin/categorias/${c.id}`} aria-label="Editar" className="text-ink-soft hover:text-pine">
                       <Pencil size={16} />
                     </Link>
-                    <form action={deleteCategory.bind(null, c.id)}>
-                      <button type="submit" aria-label="Excluir" className="text-ink-soft hover:text-terracotta">
-                        <Trash2 size={16} />
-                      </button>
-                    </form>
+                    {canDelete && (
+                      <form action={deleteCategory.bind(null, c.id)}>
+                        <ConfirmSubmitButton
+                          label={`Excluir ${c.name}`}
+                          confirmation={`Excluir a categoria “${c.name}”? Ela só poderá ser removida se não tiver produtos vinculados.`}
+                          className="text-ink-soft hover:text-terracotta"
+                        >
+                          <Trash2 size={16} />
+                        </ConfirmSubmitButton>
+                      </form>
+                    )}
                   </div>
                 </td>
               </tr>

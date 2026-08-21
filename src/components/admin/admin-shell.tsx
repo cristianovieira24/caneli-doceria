@@ -31,7 +31,7 @@ const NAV = [
   { href: "/admin/conteudo", label: "Conteúdo do site", icon: FileText },
   { href: "/admin/encomendas", label: "Encomendas", icon: Gift },
   { href: "/admin/faq", label: "Perguntas frequentes", icon: HelpCircle },
-  { href: "/admin/usuarios", label: "Usuários", icon: Users },
+  { href: "/admin/usuarios", label: "Usuários", icon: Users, ownerOnly: true },
 ];
 
 const PUBLIC_ADMIN_PATHS = new Set([
@@ -120,7 +120,9 @@ export function AdminShell({ staff, children }: AdminShellProps) {
         <AdminBrand />
 
         <nav className="mt-8 flex flex-1 flex-col gap-1">
-          {NAV.map(({ href, label, icon: Icon }) => {
+          {NAV.filter(
+            (item) => !item.ownerOnly || staff.roles.includes("proprietario")
+          ).map(({ href, label, icon: Icon }) => {
             const active =
               href === "/admin"
                 ? pathname === "/admin"
@@ -223,7 +225,9 @@ export function AdminShell({ staff, children }: AdminShellProps) {
           </div>
 
           <nav className="mt-7 flex flex-1 flex-col gap-1 overflow-y-auto">
-            {NAV.map(({ href, label, icon: Icon }) => {
+            {NAV.filter(
+              (item) => !item.ownerOnly || staff.roles.includes("proprietario")
+            ).map(({ href, label, icon: Icon }) => {
               const active =
                 href === "/admin"
                   ? pathname === "/admin"

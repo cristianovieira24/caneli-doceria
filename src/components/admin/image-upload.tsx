@@ -4,9 +4,15 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { Upload, X, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { getManagedMediaPath } from "@/lib/media";
 
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE_MB = 8;
+const EXTENSION_BY_TYPE: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+};
 
 export function ImageUpload({
   label,
@@ -37,7 +43,7 @@ export function ImageUpload({
 
     setStatus("uploading");
     const supabase = createClient();
-    const ext = file.name.split(".").pop();
+    const ext = EXTENSION_BY_TYPE[file.type];
     const path = `${folder}/${crypto.randomUUID()}.${ext}`;
 
     const { error } = await supabase.storage.from("media").upload(path, file, { upsert: false });
@@ -48,6 +54,25 @@ export function ImageUpload({
 
     const { data } = supabase.storage.from("media").getPublicUrl(path);
     setUrl(data.publicUrl);
+    setStatus("idle");
+  }
+
+  async function handleRemove() {
+    // Existing persisted images are removed only when the form is saved. A
+    // freshly uploaded but not-yet-saved file can be cleaned immediately.
+    if (url && url !== (defaultValue ?? "")) {
+      const path = getManagedMediaPath(url);
+      if (path) {
+        const supabase = createClient();
+        const { error } = await supabase.storage.from("media").remove([path]);
+        if (error) {
+          setStatus("error");
+          return;
+        }
+      }
+    }
+
+    setUrl("");
     setStatus("idle");
   }
 
@@ -63,7 +88,7 @@ export function ImageUpload({
           </div>
           <button
             type="button"
-            onClick={() => setUrl("")}
+            onClick={handleRemove}
             aria-label="Remover imagem"
             className="absolute -right-2 -top-2 rounded-full bg-ink p-1 text-cream-soft"
           >

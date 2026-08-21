@@ -37,7 +37,7 @@ export function CampaignForm({ campaign }: { campaign?: Campaign }) {
         <F label="Texto do botão (opcional)">
           <input name="button_label" defaultValue={campaign?.button_label ?? ""} className="input" />
         </F>
-        <F label="Link do botão (opcional)">
+        <F label="Link do botão (opcional)" error={state.fieldErrors?.button_link}>
           <input name="button_link" defaultValue={campaign?.button_link ?? ""} className="input" placeholder="/cardapio" />
         </F>
       </div>

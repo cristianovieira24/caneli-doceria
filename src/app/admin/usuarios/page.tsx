@@ -4,6 +4,7 @@ import { getCurrentStaff } from "@/lib/auth";
 import { AddUserForm } from "./add-user-form";
 import { removeUserRole } from "./actions";
 import { Trash2 } from "lucide-react";
+import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
 
 export default async function UsuariosPage() {
   const staff = await getCurrentStaff();
@@ -58,9 +59,13 @@ export default async function UsuariosPage() {
                 <td className="px-4 py-3 capitalize text-ink-soft">{r.role}</td>
                 <td className="px-4 py-3 text-right">
                   <form action={removeUserRole.bind(null, r.id)}>
-                    <button type="submit" aria-label="Remover" className="text-ink-soft hover:text-terracotta">
+                    <ConfirmSubmitButton
+                      label="Remover acesso"
+                      confirmation={`Remover o papel “${r.role}” de ${emailById.get(r.user_id) ?? r.user_id}?`}
+                      className="text-ink-soft hover:text-terracotta"
+                    >
                       <Trash2 size={16} />
-                    </button>
+                    </ConfirmSubmitButton>
                   </form>
                 </td>
               </tr>
