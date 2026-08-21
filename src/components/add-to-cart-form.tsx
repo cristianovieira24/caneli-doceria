@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 import { Minus, Plus } from "lucide-react";
 import { useCartStore } from "@/lib/store/cart-store";
 import { formatBRL } from "@/lib/format";
-import { resolveProductForStore } from "@/lib/product-for-store";
+import {
+  getProductUnitPrice,
+  resolveProductForStore,
+} from "@/lib/product-for-store";
 import { track } from "@/lib/analytics";
 import type { Product } from "@/types/database";
 
@@ -27,17 +30,10 @@ export function AddToCartForm({ product }: { product: Product }) {
     [product.addons, addonIds]
   );
 
-  const unitPrice = useMemo(() => {
-    const base = resolved.product.promo_price ?? resolved.product.price;
-    const variantDelta = variant?.price_delta ?? 0;
-    const addonsTotal = selectedAddons.reduce((sum, a) => sum + a.price, 0);
-    return base + variantDelta + addonsTotal;
-  }, [
-    resolved.product.promo_price,
-    resolved.product.price,
-    variant,
-    selectedAddons,
-  ]);
+  const basePrice = getProductUnitPrice(resolved.product);
+  const variantDelta = variant?.price_delta ?? 0;
+  const addonsTotal = selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
+  const unitPrice = basePrice + variantDelta + addonsTotal;
 
   function toggleAddon(id: string) {
     setAddonIds((prev) =>

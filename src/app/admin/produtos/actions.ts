@@ -154,7 +154,10 @@ export async function saveProduct(
 
   const payload = {
     ...rest,
-    promo_price: promo_price === "" || promo_price === undefined ? null : promo_price,
+    promo_price:
+      promo_price === "" || promo_price === undefined || promo_price <= 0
+        ? null
+        : promo_price,
     featured: featured === "on",
     seasonal: seasonal === "on",
   };

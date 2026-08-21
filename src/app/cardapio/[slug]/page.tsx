@@ -8,6 +8,7 @@ import { ProductDetailPrice } from "@/components/product-detail-price";
 import { Reveal } from "@/components/reveal";
 import { ViewTracker } from "@/components/view-tracker";
 import { createClient } from "@/lib/supabase/server";
+import { getProductUnitPrice } from "@/lib/product-for-store";
 import type { Product } from "@/types/database";
 
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
@@ -120,7 +121,7 @@ export default async function ProductPage({
             offers: {
               "@type": "Offer",
               priceCurrency: "BRL",
-              price: product.promo_price ?? product.price,
+              price: getProductUnitPrice(product),
               availability:
                 product.status === "published"
                   ? "https://schema.org/InStock"

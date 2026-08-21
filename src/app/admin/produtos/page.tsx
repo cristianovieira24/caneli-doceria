@@ -3,6 +3,7 @@ import { Plus, Pencil, Copy, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { deleteProduct, duplicateProduct } from "./actions";
 import { formatBRL } from "@/lib/format";
+import { getProductUnitPrice } from "@/lib/product-for-store";
 import { getCurrentStaff, hasAtLeast } from "@/lib/auth";
 import { ConfirmSubmitButton } from "@/components/admin/confirm-submit-button";
 import type { Category, Product } from "@/types/database";
@@ -96,7 +97,9 @@ export default async function AdminProdutosPage({
                   {p.featured && <span className="text-xs text-terracotta">Destaque</span>}
                 </td>
                 <td className="px-4 py-3 text-ink-soft">{p.category?.name ?? "—"}</td>
-                <td className="px-4 py-3 text-ink-soft">{formatBRL(p.promo_price ?? p.price)}</td>
+                <td className="px-4 py-3 text-ink-soft">
+                  {formatBRL(getProductUnitPrice(p))}
+                </td>
                 <td className="px-4 py-3">
                   <StatusBadge status={p.status} />
                 </td>

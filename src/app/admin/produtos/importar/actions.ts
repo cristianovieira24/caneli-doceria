@@ -103,8 +103,13 @@ export async function importProductsCSV(_prev: ImportResult | null, formData: Fo
 
     const status = VALID_STATUS.includes(r.status) ? r.status : "draft";
     const pricePrefix = VALID_PREFIX.includes(r.price_prefix) ? r.price_prefix : "";
-    const promoPrice = r.promo_price ? Number(r.promo_price.replace(",", ".")) : null;
-    if (promoPrice !== null && (!Number.isFinite(promoPrice) || promoPrice < 0)) {
+    const parsedPromoPrice = r.promo_price
+      ? Number(r.promo_price.replace(",", "."))
+      : null;
+    if (
+      parsedPromoPrice !== null &&
+      (!Number.isFinite(parsedPromoPrice) || parsedPromoPrice < 0)
+    ) {
       results.push({
         row: rowNumber,
         name: r.name,
@@ -113,6 +118,10 @@ export async function importProductsCSV(_prev: ImportResult | null, formData: Fo
       });
       continue;
     }
+    const promoPrice =
+      parsedPromoPrice !== null && parsedPromoPrice > 0
+        ? parsedPromoPrice
+        : null;
 
     const displayOrder = r.display_order ? Number(r.display_order) : 0;
     if (!Number.isInteger(displayOrder)) {

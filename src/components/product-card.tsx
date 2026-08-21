@@ -120,7 +120,7 @@ export function ProductCard({
 function PriceTag({ product }: { product: Product }) {
   const prefix = product.price_prefix === "a partir de" ? "a partir de " : "";
 
-  if (product.promo_price) {
+  if (product.promo_price !== null && product.promo_price > 0) {
     return (
       <p className="min-w-0 text-sm leading-tight">
         <span className="mr-1.5 text-ink-soft/60 line-through">

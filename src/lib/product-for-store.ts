@@ -2,6 +2,12 @@ import type { Product } from "@/types/database";
 
 export type ProductAvailability = "available" | "unavailable" | "unknown";
 
+export function getProductUnitPrice(product: Product): number {
+  return product.promo_price !== null && product.promo_price > 0
+    ? product.promo_price
+    : product.price;
+}
+
 export function resolveProductForStore(
   product: Product,
   storeId: string | null

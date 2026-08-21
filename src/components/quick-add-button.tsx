@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check, ShoppingBag } from "lucide-react";
+import { getProductUnitPrice } from "@/lib/product-for-store";
 import { useCartStore } from "@/lib/store/cart-store";
 import { track } from "@/lib/analytics";
 import type { Product } from "@/types/database";
@@ -25,17 +26,19 @@ export function QuickAddButton({
       return;
     }
 
+    const unitPrice = getProductUnitPrice(product);
+
     addLine({
       productId: product.id,
       productName: product.name,
       quantity: 1,
-      unitPrice: product.promo_price ?? product.price,
+      unitPrice,
     });
 
     track("add_to_cart", {
       product: product.slug,
       quantity: 1,
-      value: product.promo_price ?? product.price,
+      value: unitPrice,
     });
 
     setJustAdded(true);
